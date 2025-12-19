@@ -1,0 +1,12 @@
+AssetsCard
+Eine AssetCard wird in der Watchlist auf der Mainpage angezeigt und stellt die Informationen des entsprechenden Assets dar.
+Es lässt sich aufklappen um die zugeordneten TradingStrategyItems anzuzeigen.
+
+TradingStrategy
+Strategie items können an Assets angehängt werden. 
+Diese können mit Alarmen dekoriert werden, sodass der Nutzer informiert wird, wenn Bedingung eintritt.
+
+CompositeStrategy
+Erweiterte Strategien:
+    - Der Nutzer soll in der Lage sein, im Sidemenu unter Strategien, Templates für Strategiekombinationen anzulegen.
+    - Diese Kombinationen bestehen aus einer variablen Kombination aus AND und OR verknüpften einfach Strategien.

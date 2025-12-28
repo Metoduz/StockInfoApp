@@ -80,11 +80,11 @@ class _LegalInfoScreenState extends State<LegalInfoScreen>
           const SizedBox(height: 24),
           _buildSection(
             'Acceptance of Terms',
-            'By downloading, installing, or using the Stock Info App ("the App"), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the App.',
+            'By downloading, installing, or using the Asset Info App ("the App"), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the App.',
           ),
           _buildSection(
             'Description of Service',
-            'Stock Info App is a personal portfolio tracking application that provides stock information, news, and analysis tools. The App is designed for informational purposes only.',
+            'Asset Info App is a personal portfolio tracking application that provides asset information, news, and analysis tools. The App is designed for informational purposes only.',
           ),
           _buildSection(
             'User Responsibilities',
@@ -125,19 +125,19 @@ class _LegalInfoScreenState extends State<LegalInfoScreen>
           const SizedBox(height: 24),
           _buildSection(
             'Information We Collect',
-            'Stock Info App stores the following information locally on your device:\n• Your watchlist and stock preferences\n• User profile information (name, email)\n• Trading history and transactions\n• App settings and preferences',
+            'Asset Info App stores the following information locally on your device:\n• Your watchlist and asset preferences\n• User profile information (name, email)\n• Trading history and transactions\n• App settings and preferences',
           ),
           _buildSection(
             'How We Use Information',
-            'The information stored locally is used to:\n• Provide personalized stock tracking\n• Maintain your preferences across app sessions\n• Calculate portfolio performance metrics\n• Display relevant news and alerts',
+            'The information stored locally is used to:\n• Provide personalized asset tracking\n• Maintain your preferences across app sessions\n• Calculate portfolio performance metrics\n• Display relevant news and alerts',
           ),
           _buildSection(
             'Data Storage',
-            'All personal data is stored locally on your device using secure storage mechanisms. We do not transmit your personal information to external servers unless explicitly required for specific features (such as news feeds or stock data).',
+            'All personal data is stored locally on your device using secure storage mechanisms. We do not transmit your personal information to external servers unless explicitly required for specific features (such as news feeds or asset data).',
           ),
           _buildSection(
             'Third-Party Services',
-            'The App may use third-party services for:\n• Stock market data\n• Financial news feeds\n• Currency exchange rates\nThese services have their own privacy policies and terms of use.',
+            'The App may use third-party services for:\n• Asset market data\n• Financial news feeds\n• Currency exchange rates\nThese services have their own privacy policies and terms of use.',
           ),
           _buildSection(
             'Data Export',
@@ -201,15 +201,15 @@ class _LegalInfoScreenState extends State<LegalInfoScreen>
           const SizedBox(height: 24),
           _buildSection(
             'Not Financial Advice',
-            'Stock Info App is designed for informational and educational purposes only. The information provided through this App does not constitute financial, investment, trading, or other professional advice. You should not rely on this information as a substitute for professional financial advice.',
+            'Asset Info App is designed for informational and educational purposes only. The information provided through this App does not constitute financial, investment, trading, or other professional advice. You should not rely on this information as a substitute for professional financial advice.',
           ),
           _buildSection(
             'Investment Risks',
-            'Investing in stocks and other securities involves risks, including:\n• Loss of principal investment\n• Market volatility and fluctuations\n• Currency exchange rate risks\n• Liquidity risks\n• Company-specific risks\n• Economic and political risks',
+            'Investing in assets and other securities involves risks, including:\n• Loss of principal investment\n• Market volatility and fluctuations\n• Currency exchange rate risks\n• Liquidity risks\n• Company-specific risks\n• Economic and political risks',
           ),
           _buildSection(
             'Data Accuracy',
-            'While we strive to provide accurate and up-to-date information, we cannot guarantee the accuracy, completeness, or timeliness of the data displayed in the App. Stock prices, news, and other information may be delayed or contain errors.',
+            'While we strive to provide accurate and up-to-date information, we cannot guarantee the accuracy, completeness, or timeliness of the data displayed in the App. Asset prices, news, and other information may be delayed or contain errors.',
           ),
           _buildSection(
             'No Warranty',
@@ -260,7 +260,7 @@ class _LegalInfoScreenState extends State<LegalInfoScreen>
                     ],
                   ),
                   const SizedBox(height: 8),
-                  const Text('support@stockinfoapp.com'),
+                  const Text('support@assetinfoapp.com'),
                   const SizedBox(height: 16),
                   Row(
                     children: [
@@ -300,7 +300,7 @@ class _LegalInfoScreenState extends State<LegalInfoScreen>
                     ],
                   ),
                   const SizedBox(height: 8),
-                  const Text('legal@stockinfoapp.com'),
+                  const Text('legal@assetinfoapp.com'),
                 ],
               ),
             ),
@@ -308,7 +308,7 @@ class _LegalInfoScreenState extends State<LegalInfoScreen>
           const SizedBox(height: 16),
           _buildSection(
             'Business Address',
-            'Stock Info App Development Team\n123 Finance Street\nTech City, TC 12345\nGermany',
+            'Asset Info App Development Team\n123 Finance Street\nTech City, TC 12345\nGermany',
           ),
           const SizedBox(height: 16),
           _buildSection(

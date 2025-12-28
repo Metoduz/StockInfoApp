@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stockinfoapp/src/services/storage_service.dart';
-import 'package:stockinfoapp/src/models/stock_item.dart';
+import 'package:stockinfoapp/src/models/asset_item.dart';
 import 'package:stockinfoapp/src/models/user_profile.dart';
 import 'package:stockinfoapp/src/models/app_settings.dart';
 import 'package:stockinfoapp/src/models/transaction.dart';
-import 'package:stockinfoapp/src/models/stock_alert.dart';
+import 'package:stockinfoapp/src/models/asset_alert.dart';
 import 'dart:math';
 
 void main() {
@@ -44,7 +44,7 @@ void main() {
         expect(loadedWatchlist.length, equals(testWatchlist.length),
             reason: 'Watchlist should persist correctly');
         for (int i = 0; i < testWatchlist.length; i++) {
-          _verifyStockEquality(testWatchlist[i], loadedWatchlist[i], 'Watchlist stock $i');
+          _verifyAssetEquality(testWatchlist[i], loadedWatchlist[i], 'Watchlist asset $i');
         }
         
         // Test 2: User Profile persistence
@@ -74,7 +74,7 @@ void main() {
           _verifyTransactionEquality(testTransactions[i], loadedTransactions[i], 'Transaction $i');
         }
         
-        // Test 5: Stock Alerts persistence
+        // Test 5: Asset Alerts persistence
         final testAlerts = _generateRandomAlerts(random);
         await storageService.saveAlerts(testAlerts);
         final loadedAlerts = await storageService.loadAlerts();
@@ -169,7 +169,7 @@ void main() {
       
       // Test that exceptions are thrown with descriptive messages
       try {
-        await storageService.saveWatchlist([_generateRandomStock(random)]);
+        await storageService.saveWatchlist([_generateRandomAsset(random)]);
         // If we get here in a test environment, storage is working (unlikely without mocking)
         expect(isAvailable, isTrue, reason: 'Storage should be available if save succeeds');
       } catch (e) {
@@ -215,12 +215,12 @@ void main() {
 }
 
 // Helper methods for generating random test data
-List<StockItem> _generateRandomWatchlist(Random random) {
-  final stockCount = random.nextInt(5) + 1; // 1-5 stocks
-  return List.generate(stockCount, (index) => _generateRandomStock(random));
+List<AssetItem> _generateRandomWatchlist(Random random) {
+  final assetCount = random.nextInt(5) + 1; // 1-5 assets
+  return List.generate(assetCount, (index) => _generateRandomAsset(random));
 }
 
-StockItem _generateRandomStock(Random random) {
+AssetItem _generateRandomAsset(Random random) {
   final companies = [
     {'name': 'BASF SE', 'symbol': 'BAS', 'isin': 'DE000BASF111'},
     {'name': 'SAP SE', 'symbol': 'SAP', 'isin': 'DE0007164600'},
@@ -232,7 +232,7 @@ StockItem _generateRandomStock(Random random) {
   final currentValue = 50.0 + random.nextDouble() * 400.0;
   final previousClose = currentValue + (random.nextDouble() - 0.5) * 10.0;
   
-  return StockItem(
+  return AssetItem(
     id: '${company['symbol']}_${random.nextInt(1000)}',
     isin: company['isin'],
     name: company['name']!,
@@ -241,7 +241,7 @@ StockItem _generateRandomStock(Random random) {
     previousClose: double.parse(previousClose.toStringAsFixed(2)),
     currency: 'EUR',
     lastUpdated: DateTime.now().subtract(Duration(minutes: random.nextInt(60))),
-    primaryIdentifierType: StockIdentifierType.isin,
+    primaryIdentifierType: AssetIdentifierType.isin,
     isInWatchlist: true,
     hints: [],
   );
@@ -290,17 +290,17 @@ List<Transaction> _generateRandomTransactions(Random random) {
 
 Transaction _generateRandomTransaction(Random random) {
   final types = [TransactionType.buy, TransactionType.sell, TransactionType.dividend];
-  final stockIds = ['BAS_123', 'SAP_456', 'MBG_789'];
-  final stockNames = ['BASF SE', 'SAP SE', 'Mercedes-Benz Group AG'];
+  final assetIds = ['BAS_123', 'SAP_456', 'MBG_789'];
+  final assetNames = ['BASF SE', 'SAP SE', 'Mercedes-Benz Group AG'];
   
-  final stockIndex = random.nextInt(stockIds.length);
+  final assetIndex = random.nextInt(assetIds.length);
   final quantity = 1.0 + random.nextDouble() * 99.0;
   final price = 50.0 + random.nextDouble() * 400.0;
   
   return Transaction(
     id: 'txn_${random.nextInt(10000)}',
-    stockId: stockIds[stockIndex],
-    stockName: stockNames[stockIndex],
+    assetId: assetIds[assetIndex],
+    assetName: assetNames[assetIndex],
     type: types[random.nextInt(types.length)],
     quantity: double.parse(quantity.toStringAsFixed(2)),
     price: double.parse(price.toStringAsFixed(2)),
@@ -312,23 +312,23 @@ Transaction _generateRandomTransaction(Random random) {
   );
 }
 
-List<StockAlert> _generateRandomAlerts(Random random) {
+List<AssetAlert> _generateRandomAlerts(Random random) {
   final alertCount = random.nextInt(3) + 1; // 1-3 alerts
   return List.generate(alertCount, (index) => _generateRandomAlert(random));
 }
 
-StockAlert _generateRandomAlert(Random random) {
+AssetAlert _generateRandomAlert(Random random) {
   final types = [AlertType.priceAbove, AlertType.priceBelow, AlertType.percentChange];
-  final stockIds = ['BAS_123', 'SAP_456', 'MBG_789'];
-  final stockNames = ['BASF SE', 'SAP SE', 'Mercedes-Benz Group AG'];
+  final assetIds = ['BAS_123', 'SAP_456', 'MBG_789'];
+  final assetNames = ['BASF SE', 'SAP SE', 'Mercedes-Benz Group AG'];
   final sources = [AlertSource.local, AlertSource.backend];
   
-  final stockIndex = random.nextInt(stockIds.length);
+  final assetIndex = random.nextInt(assetIds.length);
   
-  return StockAlert(
+  return AssetAlert(
     id: 'alert_${random.nextInt(10000)}',
-    stockId: stockIds[stockIndex],
-    stockName: stockNames[stockIndex],
+    assetId: assetIds[assetIndex],
+    assetName: assetNames[assetIndex],
     type: types[random.nextInt(types.length)],
     threshold: 50.0 + random.nextDouble() * 400.0,
     isEnabled: random.nextBool(),
@@ -350,7 +350,7 @@ StockAlert _generateRandomAlert(Random random) {
 }
 
 // Helper methods for verifying data equality
-void _verifyStockEquality(StockItem expected, StockItem actual, String context) {
+void _verifyAssetEquality(AssetItem expected, AssetItem actual, String context) {
   expect(actual.id, equals(expected.id), reason: '$context: ID should match');
   expect(actual.name, equals(expected.name), reason: '$context: Name should match');
   expect(actual.symbol, equals(expected.symbol), reason: '$context: Symbol should match');
@@ -384,8 +384,8 @@ void _verifyAppSettingsEquality(AppSettings expected, AppSettings actual, String
 
 void _verifyTransactionEquality(Transaction expected, Transaction actual, String context) {
   expect(actual.id, equals(expected.id), reason: '$context: ID should match');
-  expect(actual.stockId, equals(expected.stockId), reason: '$context: Stock ID should match');
-  expect(actual.stockName, equals(expected.stockName), reason: '$context: Stock name should match');
+  expect(actual.assetId, equals(expected.assetId), reason: '$context: Asset ID should match');
+  expect(actual.assetName, equals(expected.assetName), reason: '$context: Asset name should match');
   expect(actual.type, equals(expected.type), reason: '$context: Type should match');
   expect(actual.quantity, equals(expected.quantity), reason: '$context: Quantity should match');
   expect(actual.price, equals(expected.price), reason: '$context: Price should match');
@@ -396,10 +396,10 @@ void _verifyTransactionEquality(Transaction expected, Transaction actual, String
   expect(actual.fees, equals(expected.fees), reason: '$context: Fees should match');
 }
 
-void _verifyAlertEquality(StockAlert expected, StockAlert actual, String context) {
+void _verifyAlertEquality(AssetAlert expected, AssetAlert actual, String context) {
   expect(actual.id, equals(expected.id), reason: '$context: ID should match');
-  expect(actual.stockId, equals(expected.stockId), reason: '$context: Stock ID should match');
-  expect(actual.stockName, equals(expected.stockName), reason: '$context: Stock name should match');
+  expect(actual.assetId, equals(expected.assetId), reason: '$context: Asset ID should match');
+  expect(actual.assetName, equals(expected.assetName), reason: '$context: Asset name should match');
   expect(actual.type, equals(expected.type), reason: '$context: Type should match');
   expect(actual.threshold, equals(expected.threshold), reason: '$context: Threshold should match');
   expect(actual.isEnabled, equals(expected.isEnabled), reason: '$context: Is enabled should match');

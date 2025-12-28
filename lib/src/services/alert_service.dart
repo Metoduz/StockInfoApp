@@ -1,22 +1,22 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
-import '../models/stock_alert.dart';
-import '../models/stock_item.dart';
+import '../models/asset_alert.dart';
+import '../models/asset_item.dart';
 import 'storage_service.dart';
 
 class AlertService extends ChangeNotifier {
   final StorageService _storageService;
-  List<StockAlert> _alerts = [];
+  List<AssetAlert> _alerts = [];
   Timer? _monitoringTimer;
   bool _isMonitoring = false;
   
-  // Mock stock data for demonstration - in real app this would come from API
-  final Map<String, StockItem> _mockStockData = {};
+  // Mock asset data for demonstration - in real app this would come from API
+  final Map<String, AssetItem> _mockAssetData = {};
 
   AlertService(this._storageService);
 
-  List<StockAlert> get alerts => List.unmodifiable(_alerts);
+  List<AssetAlert> get alerts => List.unmodifiable(_alerts);
   bool get isMonitoring => _isMonitoring;
 
   /// Initialize the alert service
@@ -47,14 +47,14 @@ class AlertService extends ChangeNotifier {
   }
 
   /// Create a new alert
-  Future<void> createAlert(StockAlert alert) async {
+  Future<void> createAlert(AssetAlert alert) async {
     if (!alert.isValid()) {
       throw ArgumentError(alert.getValidationError() ?? 'Invalid alert configuration');
     }
 
     // Check for duplicate alerts
     final existingAlert = _alerts.where((a) => 
-      a.stockId == alert.stockId && 
+      a.assetId == alert.assetId && 
       a.type == alert.type && 
       a.threshold == alert.threshold
     ).firstOrNull;
@@ -69,7 +69,7 @@ class AlertService extends ChangeNotifier {
   }
 
   /// Update an existing alert
-  Future<void> updateAlert(StockAlert updatedAlert) async {
+  Future<void> updateAlert(AssetAlert updatedAlert) async {
     if (!updatedAlert.isValid()) {
       throw ArgumentError(updatedAlert.getValidationError() ?? 'Invalid alert configuration');
     }
@@ -132,20 +132,20 @@ class AlertService extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Get alerts for a specific stock
-  List<StockAlert> getAlertsForStock(String stockId) {
-    return _alerts.where((alert) => alert.stockId == stockId).toList();
+  /// Get alerts for a specific asset
+  List<AssetAlert> getAlertsForAsset(String assetId) {
+    return _alerts.where((alert) => alert.assetId == assetId).toList();
   }
 
   /// Get active alerts (enabled and not triggered)
-  List<StockAlert> getActiveAlerts() {
+  List<AssetAlert> getActiveAlerts() {
     return _alerts.where((alert) => 
       alert.isEnabled && alert.triggeredAt == null
     ).toList();
   }
 
   /// Get triggered alerts
-  List<StockAlert> getTriggeredAlerts() {
+  List<AssetAlert> getTriggeredAlerts() {
     return _alerts.where((alert) => alert.triggeredAt != null).toList();
   }
 
@@ -175,12 +175,12 @@ class AlertService extends ChangeNotifier {
     bool hasTriggeredAlerts = false;
 
     for (final alert in activeAlerts) {
-      final stockData = _mockStockData[alert.stockId];
-      if (stockData == null) continue;
+      final assetData = _mockAssetData[alert.assetId];
+      if (assetData == null) continue;
 
       final shouldTrigger = alert.shouldTrigger(
-        stockData.currentValue,
-        stockData.previousClose,
+        assetData.currentValue,
+        assetData.previousClose,
         null, // Volume not available in mock data
       );
 
@@ -197,7 +197,7 @@ class AlertService extends ChangeNotifier {
   }
 
   /// Trigger an alert
-  Future<void> _triggerAlert(StockAlert alert) async {
+  Future<void> _triggerAlert(AssetAlert alert) async {
     final index = _alerts.indexWhere((a) => a.id == alert.id);
     if (index == -1) return;
 
@@ -208,7 +208,7 @@ class AlertService extends ChangeNotifier {
   }
 
   /// Send notification for triggered alert
-  Future<void> _sendNotification(StockAlert alert) async {
+  Future<void> _sendNotification(AssetAlert alert) async {
     // In a real app, this would integrate with platform notification services
     // For now, we'll just log the notification
     debugPrint('Alert triggered: ${alert.getDescription()}');
@@ -220,12 +220,12 @@ class AlertService extends ChangeNotifier {
     // - Backend notification sync
   }
 
-  /// Initialize mock stock data for demonstration
+  /// Initialize mock asset data for demonstration
   void _initializeMockData() {
     final random = Random();
     
-    // Create some sample stocks with fluctuating prices
-    final sampleStocks = [
+    // Create some sample assets with fluctuating prices
+    final sampleAssets = [
       ('BASF', 'BASF SE', 45.0),
       ('SAP', 'SAP SE', 120.0),
       ('MBG', 'Mercedes-Benz Group AG', 65.0),
@@ -233,12 +233,12 @@ class AlertService extends ChangeNotifier {
       ('ALV', 'Allianz SE', 250.0),
     ];
 
-    for (final (symbol, name, basePrice) in sampleStocks) {
+    for (final (symbol, name, basePrice) in sampleAssets) {
       // Add some random variation to the price
       final currentPrice = basePrice + (random.nextDouble() - 0.5) * 10;
       final previousClose = basePrice + (random.nextDouble() - 0.5) * 5;
       
-      _mockStockData[symbol] = StockItem(
+      _mockAssetData[symbol] = AssetItem(
         id: symbol,
         isin: 'DE000${symbol}001',
         wkn: '${symbol}001',
@@ -250,7 +250,7 @@ class AlertService extends ChangeNotifier {
         currency: 'EUR',
         lastUpdated: DateTime.now(),
         isInWatchlist: true,
-        primaryIdentifierType: StockIdentifierType.ticker,
+        primaryIdentifierType: AssetIdentifierType.ticker,
         dayChange: currentPrice - previousClose,
         dayChangePercent: ((currentPrice - previousClose) / previousClose) * 100,
         hints: [],
@@ -261,34 +261,34 @@ class AlertService extends ChangeNotifier {
     Timer.periodic(const Duration(seconds: 10), (_) => _updateMockPrices());
   }
 
-  /// Update mock stock prices to simulate market movement
+  /// Update mock asset prices to simulate market movement
   void _updateMockPrices() {
     final random = Random();
     
-    for (final entry in _mockStockData.entries) {
-      final stock = entry.value;
+    for (final entry in _mockAssetData.entries) {
+      final asset = entry.value;
       final priceChange = (random.nextDouble() - 0.5) * 2; // ±1 EUR change
-      final newPrice = (stock.currentValue + priceChange).clamp(1.0, 1000.0);
+      final newPrice = (asset.currentValue + priceChange).clamp(1.0, 1000.0);
       
-      _mockStockData[entry.key] = stock.copyWith(
+      _mockAssetData[entry.key] = asset.copyWith(
         currentValue: newPrice,
         lastUpdated: DateTime.now(),
-        dayChange: newPrice - (stock.previousClose ?? stock.currentValue),
-        dayChangePercent: stock.previousClose != null 
-            ? ((newPrice - stock.previousClose!) / stock.previousClose!) * 100
+        dayChange: newPrice - (asset.previousClose ?? asset.currentValue),
+        dayChangePercent: asset.previousClose != null 
+            ? ((newPrice - asset.previousClose!) / asset.previousClose!) * 100
             : 0.0,
       );
     }
   }
 
-  /// Get current stock data (for testing/demo purposes)
-  StockItem? getStockData(String stockId) {
-    return _mockStockData[stockId];
+  /// Get current asset data (for testing/demo purposes)
+  AssetItem? getAssetData(String assetId) {
+    return _mockAssetData[assetId];
   }
 
-  /// Get all available stock data
-  Map<String, StockItem> getAllStockData() {
-    return Map.unmodifiable(_mockStockData);
+  /// Get all available asset data
+  Map<String, AssetItem> getAllAssetData() {
+    return Map.unmodifiable(_mockAssetData);
   }
 
   /// Dispose resources

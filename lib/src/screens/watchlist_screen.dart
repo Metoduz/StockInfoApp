@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/stock_item.dart';
-import '../widgets/stock_card.dart';
-import '../widgets/stock_search_dialog.dart';
+import '../models/asset_item.dart';
+import '../widgets/asset_card.dart';
+import '../widgets/asset_search_dialog.dart';
 import '../providers/app_state_provider.dart';
 
 class WatchlistScreen extends StatefulWidget {
@@ -13,9 +13,9 @@ class WatchlistScreen extends StatefulWidget {
 }
 
 class _WatchlistScreenState extends State<WatchlistScreen> {
-  // Sample stock data for demonstration
-  final List<StockItem> _availableStocks = [
-    StockItem(
+  // Sample asset data for demonstration
+  final List<AssetItem> _availableAssets = [
+    AssetItem(
       id: 'BASF11',
       isin: 'DE000BASF111',
       name: 'BASF SE',
@@ -24,23 +24,23 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
       previousClose: 44.80,
       currency: 'EUR',
       lastUpdated: DateTime.now(),
-      primaryIdentifierType: StockIdentifierType.isin,
+      primaryIdentifierType: AssetIdentifierType.isin,
       isInWatchlist: true,
       hints: [
-        StockHint(
+        AssetHint(
           type: 'buy_zone',
           description: 'Strong buy zone at 44.50',
           value: 44.50,
           timestamp: DateTime(2025, 9, 10),
         ),
-        StockHint(
+        AssetHint(
           type: 'trendline',
           description: 'Uptrend confirmed - breaking above 45.00 resistance',
           timestamp: DateTime(2025, 9, 11),
         ),
       ],
     ),
-    StockItem(
+    AssetItem(
       id: 'SAP',
       isin: 'DE0007164600',
       name: 'SAP SE',
@@ -49,10 +49,10 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
       previousClose: 180.20,
       currency: 'EUR',
       lastUpdated: DateTime.now(),
-      primaryIdentifierType: StockIdentifierType.isin,
+      primaryIdentifierType: AssetIdentifierType.isin,
       isInWatchlist: true,
       hints: [
-        StockHint(
+        AssetHint(
           type: 'support',
           description: 'Strong support level at 175.00',
           value: 175.00,
@@ -60,7 +60,7 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
         ),
       ],
     ),
-    StockItem(
+    AssetItem(
       id: 'MBG',
       isin: 'DE0007100000',
       name: 'Mercedes-Benz Group AG',
@@ -69,23 +69,23 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
       previousClose: 67.50,
       currency: 'EUR',
       lastUpdated: DateTime.now(),
-      primaryIdentifierType: StockIdentifierType.isin,
+      primaryIdentifierType: AssetIdentifierType.isin,
       isInWatchlist: false,
       hints: [
-        StockHint(
+        AssetHint(
           type: 'resistance',
           description: 'Key resistance level at 70.00',
           value: 70.00,
           timestamp: DateTime(2025, 9, 8),
         ),
-        StockHint(
+        AssetHint(
           type: 'trendline',
           description: 'Breaking above resistance - bullish momentum',
           timestamp: DateTime(2025, 9, 11),
         ),
       ],
     ),
-    StockItem(
+    AssetItem(
       id: 'MUV2',
       isin: 'DE0008430026',
       name: 'Munich Re',
@@ -94,10 +94,10 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
       previousClose: 410.25,
       currency: 'EUR',
       lastUpdated: DateTime.now(),
-      primaryIdentifierType: StockIdentifierType.isin,
+      primaryIdentifierType: AssetIdentifierType.isin,
       isInWatchlist: false,
     ),
-    StockItem(
+    AssetItem(
       id: 'ADS',
       isin: 'DE000A1EWWW0',
       name: 'Adidas AG',
@@ -106,10 +106,10 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
       previousClose: 218.75,
       currency: 'EUR',
       lastUpdated: DateTime.now(),
-      primaryIdentifierType: StockIdentifierType.isin,
+      primaryIdentifierType: AssetIdentifierType.isin,
       isInWatchlist: false,
       hints: [
-        StockHint(
+        AssetHint(
           type: 'buy_zone',
           description: 'Good entry point below 220.00',
           value: 220.00,
@@ -117,7 +117,7 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
         ),
       ],
     ),
-    StockItem(
+    AssetItem(
       id: 'BMW',
       isin: 'DE0005190003',
       name: 'Bayerische Motoren Werke AG',
@@ -126,10 +126,10 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
       previousClose: 88.20,
       currency: 'EUR',
       lastUpdated: DateTime.now(),
-      primaryIdentifierType: StockIdentifierType.isin,
+      primaryIdentifierType: AssetIdentifierType.isin,
       isInWatchlist: false,
       hints: [
-        StockHint(
+        AssetHint(
           type: 'support',
           description: 'Strong support at 85.00',
           value: 85.00,
@@ -137,7 +137,7 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
         ),
       ],
     ),
-    StockItem(
+    AssetItem(
       id: 'SIE',
       isin: 'DE0007236101',
       name: 'Siemens AG',
@@ -146,10 +146,10 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
       previousClose: 163.80,
       currency: 'EUR',
       lastUpdated: DateTime.now(),
-      primaryIdentifierType: StockIdentifierType.isin,
+      primaryIdentifierType: AssetIdentifierType.isin,
       isInWatchlist: false,
     ),
-    StockItem(
+    AssetItem(
       id: 'ALV',
       isin: 'DE0008404005',
       name: 'Allianz SE',
@@ -158,10 +158,10 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
       previousClose: 244.10,
       currency: 'EUR',
       lastUpdated: DateTime.now(),
-      primaryIdentifierType: StockIdentifierType.isin,
+      primaryIdentifierType: AssetIdentifierType.isin,
       isInWatchlist: false,
       hints: [
-        StockHint(
+        AssetHint(
           type: 'resistance',
           description: 'Testing resistance at 250.00',
           value: 250.00,
@@ -184,11 +184,11 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
             actions: [
               IconButton(
                 icon: const Icon(Icons.add),
-                onPressed: () => _showAddStockDialog(appState),
+                onPressed: () => _showAddAssetDialog(appState),
               ),
               IconButton(
                 icon: const Icon(Icons.refresh),
-                onPressed: _refreshStocks,
+                onPressed: _refreshAssets,
               ),
             ],
           ),
@@ -204,7 +204,7 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
     );
   }
 
-  Widget _buildWatchlistContent(AppStateProvider appState, List<StockItem> watchlist) {
+  Widget _buildWatchlistContent(AppStateProvider appState, List<AssetItem> watchlist) {
     if (watchlist.isEmpty) {
       return _buildEmptyWatchlist(appState);
     }
@@ -213,9 +213,9 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
       itemCount: watchlist.length,
       onReorder: (oldIndex, newIndex) => appState.reorderWatchlist(oldIndex, newIndex),
       itemBuilder: (context, index) {
-        final stock = watchlist[index];
+        final asset = watchlist[index];
         return Dismissible(
-          key: Key(stock.id),
+          key: Key(asset.id),
           direction: DismissDirection.endToStart,
           background: Container(
             alignment: Alignment.centerRight,
@@ -227,14 +227,14 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
             ),
           ),
           confirmDismiss: (direction) async {
-            return await _showRemoveConfirmation(stock);
+            return await _showRemoveConfirmation(asset);
           },
           onDismissed: (direction) {
-            _removeStock(appState, stock);
+            _removeAsset(appState, asset);
           },
-          child: StockCard(
-            stock: stock,
-            onTap: () => _showStockDetails(stock),
+          child: AssetCard(
+            asset: asset,
+            onTap: () => _showAssetDetails(asset),
           ),
         );
       },
@@ -262,7 +262,7 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Add stocks to track your investments',
+            'Add assets to track your investments',
             style: TextStyle(
               fontSize: 16,
               color: Colors.grey,
@@ -271,22 +271,22 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
-            onPressed: () => _showAddStockDialog(appState),
+            onPressed: () => _showAddAssetDialog(appState),
             icon: const Icon(Icons.add),
-            label: const Text('Add Your First Stock'),
+            label: const Text('Add Your First Asset'),
           ),
         ],
       ),
     );
   }
 
-  Future<bool> _showRemoveConfirmation(StockItem stock) async {
+  Future<bool> _showRemoveConfirmation(AssetItem asset) async {
     return await showDialog<bool>(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Remove Stock'),
-          content: Text('Remove ${stock.name} from your watchlist?'),
+          title: const Text('Remove Asset'),
+          content: Text('Remove ${asset.name} from your watchlist?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
@@ -302,93 +302,93 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
     ) ?? false;
   }
 
-  void _removeStock(AppStateProvider appState, StockItem stock) {
-    appState.removeFromWatchlist(stock.id);
+  void _removeAsset(AppStateProvider appState, AssetItem asset) {
+    appState.removeFromWatchlist(asset.id);
     
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('${stock.name} removed from watchlist'),
+        content: Text('${asset.name} removed from watchlist'),
         action: SnackBarAction(
           label: 'Undo',
-          onPressed: () => _undoRemoveStock(appState, stock),
+          onPressed: () => _undoRemoveAsset(appState, asset),
         ),
       ),
     );
   }
 
-  void _undoRemoveStock(AppStateProvider appState, StockItem stock) {
-    appState.addToWatchlist(stock);
+  void _undoRemoveAsset(AppStateProvider appState, AssetItem asset) {
+    appState.addToWatchlist(asset);
   }
 
-  void _showAddStockDialog(AppStateProvider appState) {
+  void _showAddAssetDialog(AppStateProvider appState) {
     showDialog(
       context: context,
-      builder: (context) => StockSearchDialog(
-        availableStocks: _availableStocks,
+      builder: (context) => AssetSearchDialog(
+        availableAssets: _availableAssets,
         currentWatchlist: appState.watchlist,
-        onStockSelected: (stock) => _addStock(appState, stock),
+        onAssetSelected: (asset) => _addAsset(appState, asset),
       ),
     );
   }
 
-  void _addStock(AppStateProvider appState, StockItem stock) {
+  void _addAsset(AppStateProvider appState, AssetItem asset) {
     // Enhanced duplicate prevention with multiple checks
     final watchlist = appState.watchlist;
-    final isDuplicateById = watchlist.any((item) => item.id == stock.id);
-    final isDuplicateByIsin = stock.isin != null && 
-        watchlist.any((item) => item.isin == stock.isin);
+    final isDuplicateById = watchlist.any((item) => item.id == asset.id);
+    final isDuplicateByIsin = asset.isin != null && 
+        watchlist.any((item) => item.isin == asset.isin);
     final isDuplicateBySymbolAndName = watchlist.any((item) => 
-        item.symbol == stock.symbol && item.name == stock.name);
+        item.symbol == asset.symbol && item.name == asset.name);
     
     if (isDuplicateById || isDuplicateByIsin || isDuplicateBySymbolAndName) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${stock.name} is already in your watchlist'),
+          content: Text('${asset.name} is already in your watchlist'),
           backgroundColor: Colors.orange,
         ),
       );
       return;
     }
     
-    appState.addToWatchlist(stock.addToWatchlist());
+    appState.addToWatchlist(asset.addToWatchlist());
     
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('${stock.name} added to watchlist'),
+        content: Text('${asset.name} added to watchlist'),
         backgroundColor: Colors.green,
         action: SnackBarAction(
           label: 'Undo',
           textColor: Colors.white,
-          onPressed: () => _undoAddStock(appState, stock),
+          onPressed: () => _undoAddAsset(appState, asset),
         ),
       ),
     );
   }
 
-  void _undoAddStock(AppStateProvider appState, StockItem stock) {
-    appState.removeFromWatchlist(stock.id);
+  void _undoAddAsset(AppStateProvider appState, AssetItem asset) {
+    appState.removeFromWatchlist(asset.id);
   }
 
-  void _showStockDetails(StockItem stock) {
+  void _showAssetDetails(AssetItem asset) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text(stock.name),
+          title: Text(asset.name),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('ISIN: ${stock.isin ?? stock.id}'),
-              Text('Current: ${stock.currentValue} ${stock.currency}'),
-              if (stock.previousClose != null)
-                Text('Previous Close: ${stock.previousClose} ${stock.currency}'),
-              Text('Change: ${stock.calculatedDayChange.toStringAsFixed(2)} '
-                  '(${stock.calculatedDayChangePercent.toStringAsFixed(2)}%)'),
-              if (stock.hints.isNotEmpty) ...[
+              Text('ISIN: ${asset.isin ?? asset.id}'),
+              Text('Current: ${asset.currentValue} ${asset.currency}'),
+              if (asset.previousClose != null)
+                Text('Previous Close: ${asset.previousClose} ${asset.currency}'),
+              Text('Change: ${asset.calculatedDayChange.toStringAsFixed(2)} '
+                  '(${asset.calculatedDayChangePercent.toStringAsFixed(2)}%)'),
+              if (asset.hints.isNotEmpty) ...[
                 const SizedBox(height: 16),
                 const Text('Hints:', style: TextStyle(fontWeight: FontWeight.bold)),
-                ...stock.hints.map((hint) => Text('• ${hint.description}')),
+                ...asset.hints.map((hint) => Text('• ${hint.description}')),
               ],
             ],
           ),
@@ -403,10 +403,10 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
     );
   }
 
-  void _refreshStocks() {
-    // Placeholder for refreshing stock data
+  void _refreshAssets() {
+    // Placeholder for refreshing asset data
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Refreshing stock data...')),
+      const SnackBar(content: Text('Refreshing asset data...')),
     );
   }
 }

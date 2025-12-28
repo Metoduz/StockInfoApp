@@ -36,7 +36,7 @@ void main() {
       // Test bottom navigation - switch to Alerts tab
       await tester.tap(find.byIcon(Icons.notifications));
       await tester.pumpAndSettle();
-      expect(find.text('Stock Alerts'), findsOneWidget);
+      expect(find.text('Asset Alerts'), findsOneWidget);
 
       // Test bottom navigation - back to Main tab
       await tester.tap(find.byIcon(Icons.home));
@@ -114,7 +114,7 @@ void main() {
       // Switch to Alerts tab
       await tester.tap(find.byIcon(Icons.notifications));
       await tester.pumpAndSettle();
-      expect(find.text('Stock Alerts'), findsOneWidget);
+      expect(find.text('Asset Alerts'), findsOneWidget);
 
       // Switch back to Main tab - state should be preserved
       await tester.tap(find.byIcon(Icons.home));
@@ -129,7 +129,7 @@ void main() {
       // Switch back to Alerts tab - state should be preserved
       await tester.tap(find.byIcon(Icons.notifications));
       await tester.pumpAndSettle();
-      expect(find.text('Stock Alerts'), findsOneWidget);
+      expect(find.text('Asset Alerts'), findsOneWidget);
     });
 
     testWidgets('Deep linking to specific tabs works', (WidgetTester tester) async {
@@ -169,7 +169,7 @@ void main() {
 
       // Test that drawer is accessible from all tabs
       final List<IconData> tabIcons = [Icons.home, Icons.newspaper, Icons.notifications];
-      final List<String> expectedTitles = ['My Watchlist', 'Financial News', 'Stock Alerts'];
+      final List<String> expectedTitles = ['My Watchlist', 'Financial News', 'Asset Alerts'];
 
       for (int i = 0; i < tabIcons.length; i++) {
         // Navigate to tab

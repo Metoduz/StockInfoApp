@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:stockinfoapp/src/models/stock_alert.dart';
+import 'package:stockinfoapp/src/models/asset_alert.dart';
 import 'package:stockinfoapp/src/services/alert_service.dart';
 import 'package:stockinfoapp/src/services/storage_service.dart';
 import 'dart:math';
@@ -48,10 +48,10 @@ void main() {
         final createdAlert = alerts.firstWhere((a) => a.id == alert.id);
         
         // Verify all configuration properties are preserved
-        expect(createdAlert.stockId, equals(alert.stockId),
-            reason: 'Stock ID should be preserved');
-        expect(createdAlert.stockName, equals(alert.stockName),
-            reason: 'Stock name should be preserved');
+        expect(createdAlert.assetId, equals(alert.assetId),
+            reason: 'Asset ID should be preserved');
+        expect(createdAlert.assetName, equals(alert.assetName),
+            reason: 'Asset name should be preserved');
         expect(createdAlert.type, equals(alert.type),
             reason: 'Alert type should be preserved');
         expect(createdAlert.threshold, equals(alert.threshold),
@@ -87,15 +87,15 @@ void main() {
         final alert = _generateRandomValidAlert(random);
         await alertService.createAlert(alert);
         
-        // Get mock stock data for the alert's stock
-        final stockData = alertService.getStockData(alert.stockId);
-        expect(stockData, isNotNull,
-            reason: 'Stock data should be available for alert testing');
+        // Get mock asset data for the alert's asset
+        final assetData = alertService.getAssetData(alert.assetId);
+        expect(assetData, isNotNull,
+            reason: 'Asset data should be available for alert testing');
         
         // Test if alert should trigger based on current conditions
         final shouldTrigger = alert.shouldTrigger(
-          stockData!.currentValue,
-          stockData.previousClose,
+          assetData!.currentValue,
+          assetData.previousClose,
           null, // Volume not available in mock data
         );
         
@@ -164,13 +164,13 @@ void main() {
             reason: 'Alert status should be disabled when isEnabled is false');
         
         // Verify disabled alert should not trigger even if condition is met
-        final stockData = alertService.getStockData(alert.stockId);
-        expect(stockData, isNotNull,
-            reason: 'Stock data should be available for alert testing');
+        final assetData = alertService.getAssetData(alert.assetId);
+        expect(assetData, isNotNull,
+            reason: 'Asset data should be available for alert testing');
         
         final shouldTrigger = disabledAlert.shouldTrigger(
-          stockData!.currentValue,
-          stockData.previousClose,
+          assetData!.currentValue,
+          assetData.previousClose,
           null,
         );
         
@@ -265,10 +265,10 @@ void main() {
           final basePrice = 100.0 + random.nextDouble() * 100.0;
           final threshold = _generateValidThreshold(alertType, random);
           
-          final alert = StockAlert(
+          final alert = AssetAlert(
             id: 'test_${DateTime.now().millisecondsSinceEpoch}_$iteration',
-            stockId: 'TEST',
-            stockName: 'Test Stock',
+            assetId: 'TEST',
+            assetName: 'Test Asset',
             type: alertType,
             threshold: threshold,
             createdAt: DateTime.now(),
@@ -318,19 +318,19 @@ void main() {
   });
 }
 
-StockAlert _generateRandomValidAlert(Random random) {
-  final stockIds = ['BASF', 'SAP', 'MBG', 'SIE', 'ALV'];
-  final stockNames = ['BASF SE', 'SAP SE', 'Mercedes-Benz Group AG', 'Siemens AG', 'Allianz SE'];
+AssetAlert _generateRandomValidAlert(Random random) {
+  final assetIds = ['BASF', 'SAP', 'MBG', 'SIE', 'ALV'];
+  final assetNames = ['BASF SE', 'SAP SE', 'Mercedes-Benz Group AG', 'Siemens AG', 'Allianz SE'];
   final alertTypes = AlertType.values;
   
-  final stockIndex = random.nextInt(stockIds.length);
+  final assetIndex = random.nextInt(assetIds.length);
   final alertType = alertTypes[random.nextInt(alertTypes.length)];
   final threshold = _generateValidThreshold(alertType, random);
   
-  return StockAlert(
+  return AssetAlert(
     id: 'alert_${DateTime.now().millisecondsSinceEpoch}_${random.nextInt(1000)}',
-    stockId: stockIds[stockIndex],
-    stockName: stockNames[stockIndex],
+    assetId: assetIds[assetIndex],
+    assetName: assetNames[assetIndex],
     type: alertType,
     threshold: threshold,
     isEnabled: random.nextBool(),
@@ -347,11 +347,11 @@ StockAlert _generateRandomValidAlert(Random random) {
   );
 }
 
-StockAlert _generateRandomInvalidAlert(Random random) {
+AssetAlert _generateRandomInvalidAlert(Random random) {
   final invalidTypes = [
     'empty_id',
-    'empty_stock_id',
-    'empty_stock_name',
+    'empty_asset_id',
+    'empty_asset_name',
     'negative_threshold',
     'invalid_percentage',
   ];
@@ -360,46 +360,46 @@ StockAlert _generateRandomInvalidAlert(Random random) {
   
   switch (invalidType) {
     case 'empty_id':
-      return StockAlert(
+      return AssetAlert(
         id: '', // Invalid: empty ID
-        stockId: 'BASF',
-        stockName: 'BASF SE',
+        assetId: 'BASF',
+        assetName: 'BASF SE',
         type: AlertType.priceAbove,
         threshold: 100.0,
         createdAt: DateTime.now(),
       );
-    case 'empty_stock_id':
-      return StockAlert(
+    case 'empty_asset_id':
+      return AssetAlert(
         id: 'valid_id',
-        stockId: '', // Invalid: empty stock ID
-        stockName: 'BASF SE',
+        assetId: '', // Invalid: empty asset ID
+        assetName: 'BASF SE',
         type: AlertType.priceAbove,
         threshold: 100.0,
         createdAt: DateTime.now(),
       );
-    case 'empty_stock_name':
-      return StockAlert(
+    case 'empty_asset_name':
+      return AssetAlert(
         id: 'valid_id',
-        stockId: 'BASF',
-        stockName: '', // Invalid: empty stock name
+        assetId: 'BASF',
+        assetName: '', // Invalid: empty asset name
         type: AlertType.priceAbove,
         threshold: 100.0,
         createdAt: DateTime.now(),
       );
     case 'negative_threshold':
-      return StockAlert(
+      return AssetAlert(
         id: 'valid_id',
-        stockId: 'BASF',
-        stockName: 'BASF SE',
+        assetId: 'BASF',
+        assetName: 'BASF SE',
         type: AlertType.priceAbove,
         threshold: -10.0, // Invalid: negative threshold
         createdAt: DateTime.now(),
       );
     case 'invalid_percentage':
-      return StockAlert(
+      return AssetAlert(
         id: 'valid_id',
-        stockId: 'BASF',
-        stockName: 'BASF SE',
+        assetId: 'BASF',
+        assetName: 'BASF SE',
         type: AlertType.percentChange,
         threshold: 150.0, // Invalid: percentage > 100
         createdAt: DateTime.now(),

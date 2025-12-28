@@ -28,10 +28,10 @@ void main() {
             reason: 'Transaction price should be positive');
         expect(transaction.date, isNotNull, 
             reason: 'Transaction date should be present');
-        expect(transaction.stockId, isNotEmpty, 
-            reason: 'Stock ID should be present');
-        expect(transaction.stockName, isNotEmpty, 
-            reason: 'Stock name should be present');
+        expect(transaction.assetId, isNotEmpty, 
+            reason: 'Asset ID should be present');
+        expect(transaction.assetName, isNotEmpty, 
+            reason: 'Asset name should be present');
         expect(transaction.totalValue, greaterThan(0), 
             reason: 'Total value should be positive');
         
@@ -59,11 +59,11 @@ void main() {
         // Generate a random set of transactions
         final transactions = _generateRandomTransactionSet(random);
         
-        // Generate current prices for the stocks
+        // Generate current prices for the assets
         final currentPrices = <String, double>{};
-        final stockIds = transactions.map((t) => t.stockId).toSet();
-        for (final stockId in stockIds) {
-          currentPrices[stockId] = 50.0 + random.nextDouble() * 400.0;
+        final assetIds = transactions.map((t) => t.assetId).toSet();
+        for (final assetId in assetIds) {
+          currentPrices[assetId] = 50.0 + random.nextDouble() * 400.0;
         }
         
         // Calculate performance metrics
@@ -74,8 +74,8 @@ void main() {
             reason: 'Total transactions count should match input');
         expect(metrics.totalFees, greaterThanOrEqualTo(0),
             reason: 'Total fees should be non-negative');
-        expect(metrics.stockPerformance, isNotNull,
-            reason: 'Stock performance map should be present');
+        expect(metrics.assetPerformance, isNotNull,
+            reason: 'Asset performance map should be present');
         
         // Verify that total invested is calculated correctly for buy transactions
         final expectedTotalInvested = transactions
@@ -105,43 +105,43 @@ void main() {
               reason: 'Percentage return should be 0 when no investment');
         }
         
-        // Verify that stock performance is calculated for each stock
-        for (final stockId in stockIds) {
-          if (metrics.stockPerformance.containsKey(stockId)) {
-            final performance = metrics.stockPerformance[stockId]!;
+        // Verify that asset performance is calculated for each asset
+        for (final assetId in assetIds) {
+          if (metrics.assetPerformance.containsKey(assetId)) {
+            final performance = metrics.assetPerformance[assetId]!;
             expect(performance, isA<double>(),
-                reason: 'Stock performance should be a valid number');
+                reason: 'Asset performance should be a valid number');
           }
         }
       }
     });
 
-    test('Property 12: Trading History Filtering - For any valid filter criteria (date range or stock symbol), the trading history should display only matching transactions',
+    test('Property 12: Trading History Filtering - For any valid filter criteria (date range or asset symbol), the trading history should display only matching transactions',
         () async {
       // **Feature: enhanced-navigation, Property 12: Trading History Filtering**
       // **Validates: Requirements 6.5**
       
       for (int iteration = 0; iteration < 100; iteration++) {
-        // Generate a diverse set of transactions with different dates and stocks
+        // Generate a diverse set of transactions with different dates and assets
         final transactions = _generateDiverseTransactionSet(random);
         
-        // Test 1: Stock symbol filtering
+        // Test 1: Asset symbol filtering
         if (transactions.isNotEmpty) {
           final randomTransaction = transactions[random.nextInt(transactions.length)];
-          final stockSymbolFilter = randomTransaction.stockId;
+          final assetSymbolFilter = randomTransaction.assetId;
           
-          final filteredByStock = transactions.where((t) => 
-              t.matchesFilter(stockSymbol: stockSymbolFilter)).toList();
+          final filteredByAsset = transactions.where((t) => 
+              t.matchesFilter(assetSymbol: assetSymbolFilter)).toList();
           
-          // Verify all filtered transactions match the stock symbol
-          for (final transaction in filteredByStock) {
-            expect(transaction.stockId.toLowerCase(), 
-                contains(stockSymbolFilter.toLowerCase()),
-                reason: 'Filtered transaction should contain the stock symbol');
+          // Verify all filtered transactions match the asset symbol
+          for (final transaction in filteredByAsset) {
+            expect(transaction.assetId.toLowerCase(), 
+                contains(assetSymbolFilter.toLowerCase()),
+                reason: 'Filtered transaction should contain the asset symbol');
           }
           
           // Verify that the original transaction is included
-          expect(filteredByStock, contains(randomTransaction),
+          expect(filteredByAsset, contains(randomTransaction),
               reason: 'Original transaction should be included in filtered results');
         }
         
@@ -186,14 +186,14 @@ void main() {
         // Test 4: Combined filtering
         if (transactions.isNotEmpty) {
           final randomTransaction = transactions[random.nextInt(transactions.length)];
-          final stockFilter = randomTransaction.stockId;
+          final assetFilter = randomTransaction.assetId;
           final typeFilter = randomTransaction.type;
           final startDate = randomTransaction.date.subtract(Duration(days: 1));
           final endDate = randomTransaction.date.add(Duration(days: 1));
           
           final filteredCombined = transactions.where((t) => 
               t.matchesFilter(
-                stockSymbol: stockFilter,
+                assetSymbol: assetFilter,
                 transactionType: typeFilter,
                 startDate: startDate,
                 endDate: endDate,
@@ -205,9 +205,9 @@ void main() {
           
           // Verify all filtered transactions match all criteria
           for (final transaction in filteredCombined) {
-            expect(transaction.stockId.toLowerCase(), 
-                contains(stockFilter.toLowerCase()),
-                reason: 'Combined filter: stock symbol should match');
+            expect(transaction.assetId.toLowerCase(), 
+                contains(assetFilter.toLowerCase()),
+                reason: 'Combined filter: asset symbol should match');
             expect(transaction.type, equals(typeFilter),
                 reason: 'Combined filter: transaction type should match');
             expect(transaction.date.isAfter(startDate.subtract(Duration(days: 1))), isTrue,
@@ -218,12 +218,12 @@ void main() {
         }
         
         // Test 5: Empty filter results
-        final impossibleStockFilter = 'NONEXISTENT_STOCK_${random.nextInt(10000)}';
+        final impossibleAssetFilter = 'NONEXISTENT_ASSET_${random.nextInt(10000)}';
         final emptyResults = transactions.where((t) => 
-            t.matchesFilter(stockSymbol: impossibleStockFilter)).toList();
+            t.matchesFilter(assetSymbol: impossibleAssetFilter)).toList();
         
         expect(emptyResults.isEmpty, isTrue,
-            reason: 'Filtering with non-existent stock should return empty results');
+            reason: 'Filtering with non-existent asset should return empty results');
         
         // Test 6: No filter (should return all transactions)
         final unfiltered = transactions.where((t) => t.matchesFilter()).toList();
@@ -246,13 +246,13 @@ void main() {
         expect(emptyMetrics.totalProfitLoss, equals(0.0));
         expect(emptyMetrics.totalPercentageReturn, equals(0.0));
         expect(emptyMetrics.totalFees, equals(0.0));
-        expect(emptyMetrics.stockPerformance.isEmpty, isTrue);
+        expect(emptyMetrics.assetPerformance.isEmpty, isTrue);
         
         // Test 2: Only sell transactions (should handle gracefully)
         final sellOnlyTransactions = List.generate(3, (i) => Transaction(
           id: 'sell_$i',
-          stockId: 'STOCK_$i',
-          stockName: 'Stock $i',
+          assetId: 'ASSET_$i',
+          assetName: 'Asset $i',
           type: TransactionType.sell,
           quantity: 10.0 + random.nextDouble() * 90.0,
           price: 50.0 + random.nextDouble() * 400.0,
@@ -262,7 +262,7 @@ void main() {
         
         final currentPrices = <String, double>{};
         for (final t in sellOnlyTransactions) {
-          currentPrices[t.stockId] = 50.0 + random.nextDouble() * 400.0;
+          currentPrices[t.assetId] = 50.0 + random.nextDouble() * 400.0;
         }
         
         final sellOnlyMetrics = PerformanceMetrics.fromTransactions(sellOnlyTransactions, currentPrices);
@@ -273,8 +273,8 @@ void main() {
         // Test 3: Only dividend transactions
         final dividendOnlyTransactions = List.generate(2, (i) => Transaction(
           id: 'div_$i',
-          stockId: 'STOCK_$i',
-          stockName: 'Stock $i',
+          assetId: 'ASSET_$i',
+          assetName: 'Asset $i',
           type: TransactionType.dividend,
           quantity: 1.0,
           price: 5.0 + random.nextDouble() * 20.0,
@@ -292,8 +292,8 @@ void main() {
         // Test 4: Transactions with zero or negative prices (edge case)
         final edgeCaseTransaction = Transaction(
           id: 'edge_case',
-          stockId: 'EDGE_STOCK',
-          stockName: 'Edge Stock',
+          assetId: 'EDGE_ASSET',
+          assetName: 'Edge Asset',
           type: TransactionType.buy,
           quantity: 10.0,
           price: 0.01, // Very small price
@@ -301,15 +301,15 @@ void main() {
           date: DateTime.now(),
         );
         
-        final edgeMetrics = PerformanceMetrics.fromTransactions([edgeCaseTransaction], {'EDGE_STOCK': 0.02});
+        final edgeMetrics = PerformanceMetrics.fromTransactions([edgeCaseTransaction], {'EDGE_ASSET': 0.02});
         expect(edgeMetrics.totalInvested, equals(0.1));
         expect(edgeMetrics.totalValue, closeTo(0.2, 0.01)); // 10 * 0.02
         
         // Test 5: Very large numbers
         final largeTransaction = Transaction(
           id: 'large',
-          stockId: 'LARGE_STOCK',
-          stockName: 'Large Stock',
+          assetId: 'LARGE_ASSET',
+          assetName: 'Large Asset',
           type: TransactionType.buy,
           quantity: 1000000.0,
           price: 1000.0,
@@ -317,7 +317,7 @@ void main() {
           date: DateTime.now(),
         );
         
-        final largeMetrics = PerformanceMetrics.fromTransactions([largeTransaction], {'LARGE_STOCK': 1001.0});
+        final largeMetrics = PerformanceMetrics.fromTransactions([largeTransaction], {'LARGE_ASSET': 1001.0});
         expect(largeMetrics.totalInvested, equals(1000000000.0));
         expect(largeMetrics.totalValue, equals(1001000000.0)); // 1000000 * 1001
         expect(largeMetrics.totalProfitLoss, equals(1000000.0));
@@ -330,13 +330,13 @@ void main() {
 // Helper methods for generating test data
 Transaction _generateRandomTransaction(Random random) {
   final types = [TransactionType.buy, TransactionType.sell, TransactionType.dividend];
-  final stockIds = ['AAPL', 'GOOGL', 'MSFT', 'TSLA', 'AMZN', 'BAS', 'SAP', 'MBG'];
-  final stockNames = [
+  final assetIds = ['AAPL', 'GOOGL', 'MSFT', 'TSLA', 'AMZN', 'BAS', 'SAP', 'MBG'];
+  final assetNames = [
     'Apple Inc.', 'Alphabet Inc.', 'Microsoft Corp.', 'Tesla Inc.', 'Amazon.com Inc.',
     'BASF SE', 'SAP SE', 'Mercedes-Benz Group AG'
   ];
   
-  final stockIndex = random.nextInt(stockIds.length);
+  final assetIndex = random.nextInt(assetIds.length);
   final quantity = double.parse((1.0 + random.nextDouble() * 99.0).toStringAsFixed(2));
   final price = double.parse((10.0 + random.nextDouble() * 500.0).toStringAsFixed(2));
   final totalValue = double.parse((quantity * price).toStringAsFixed(2));
@@ -344,8 +344,8 @@ Transaction _generateRandomTransaction(Random random) {
   
   return Transaction(
     id: 'txn_${random.nextInt(100000)}',
-    stockId: stockIds[stockIndex],
-    stockName: stockNames[stockIndex],
+    assetId: assetIds[assetIndex],
+    assetName: assetNames[assetIndex],
     type: types[random.nextInt(types.length)],
     quantity: quantity,
     price: price,
@@ -370,12 +370,12 @@ List<Transaction> _generateDiverseTransactionSet(Random random) {
   final transactions = <Transaction>[];
   
   // Ensure we have transactions with different characteristics for filtering tests
-  final stockIds = ['AAPL', 'GOOGL', 'MSFT', 'TSLA'];
+  final assetIds = ['AAPL', 'GOOGL', 'MSFT', 'TSLA'];
   final types = [TransactionType.buy, TransactionType.sell, TransactionType.dividend];
   
   // Generate transactions across different dates
   for (int i = 0; i < 15; i++) {
-    final stockId = stockIds[random.nextInt(stockIds.length)];
+    final assetId = assetIds[random.nextInt(assetIds.length)];
     final type = types[random.nextInt(types.length)];
     final quantity = double.parse((1.0 + random.nextDouble() * 99.0).toStringAsFixed(2));
     final price = double.parse((10.0 + random.nextDouble() * 500.0).toStringAsFixed(2));
@@ -383,8 +383,8 @@ List<Transaction> _generateDiverseTransactionSet(Random random) {
     
     transactions.add(Transaction(
       id: 'diverse_txn_$i',
-      stockId: stockId,
-      stockName: '$stockId Corp.',
+      assetId: assetId,
+      assetName: '$assetId Corp.',
       type: type,
       quantity: quantity,
       price: price,

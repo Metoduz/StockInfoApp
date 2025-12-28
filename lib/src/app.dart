@@ -41,7 +41,7 @@ class _MyAppState extends State<MyApp> {
           home: const NavigationShell(),
           // Define named routes for deep linking support
           routes: {
-            '/': (context) => const NavigationShell(),
+            //'/': (context) => const NavigationShell(),
             '/main': (context) => const NavigationShell(initialIndex: 0),
             '/news': (context) => const NavigationShell(initialIndex: 1),
             '/alerts': (context) => const NavigationShell(initialIndex: 2),

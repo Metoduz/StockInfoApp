@@ -35,7 +35,7 @@ class _NavigationShellState extends State<NavigationShell> {
 
   @override
   void initState() {
-    super.initState();
+    super.initState(); 
     _currentIndex = widget.initialIndex;
   }
 

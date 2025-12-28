@@ -45,10 +45,10 @@ class NewsService {
     }
   }
 
-  /// Fetches news articles related to specific stock symbols
-  Future<List<NewsArticle>> fetchNewsForStocks(List<String> stockIds) async {
+  /// Fetches news articles related to specific asset symbols
+  Future<List<NewsArticle>> fetchNewsForAssets(List<String> assetIds) async {
     final allArticles = await fetchNews();
-    return allArticles.where((article) => article.isRelatedToStocks(stockIds)).toList();
+    return allArticles.where((article) => article.isRelatedToAssets(assetIds)).toList();
   }
 
   /// Caches news articles with timestamp
@@ -117,13 +117,13 @@ class NewsService {
     final mockArticles = [
       NewsArticle(
         id: 'news_1',
-        title: 'DAX Reaches New Heights as Tech Stocks Surge',
-        summary: 'German stock index DAX climbed to record levels driven by strong performance in technology sector.',
-        content: 'The German DAX index reached new record highs today as technology stocks led a broad market rally. SAP AG was among the top performers, gaining 3.2% on strong quarterly earnings...',
+        title: 'DAX Reaches New Heights as Tech Assets Surge',
+        summary: 'German asset index DAX climbed to record levels driven by strong performance in technology sector.',
+        content: 'The German DAX index reached new record highs today as technology assets led a broad market rally. SAP AG was among the top performers, gaining 3.2% on strong quarterly earnings...',
         source: 'Financial Times',
         publishedAt: now.subtract(Duration(hours: random.nextInt(24))),
         imageUrl: 'https://example.com/images/dax-surge.jpg',
-        relatedStockIds: ['SAP', 'BASF'],
+        relatedAssetIds: ['SAP', 'BASF'],
         category: 'market',
       ),
       NewsArticle(
@@ -134,7 +134,7 @@ class NewsService {
         source: 'Reuters',
         publishedAt: now.subtract(Duration(hours: random.nextInt(48))),
         imageUrl: 'https://example.com/images/basf-earnings.jpg',
-        relatedStockIds: ['BASF'],
+        relatedAssetIds: ['BASF'],
         category: 'earnings',
       ),
       NewsArticle(
@@ -145,17 +145,17 @@ class NewsService {
         source: 'Bloomberg',
         publishedAt: now.subtract(Duration(hours: random.nextInt(72))),
         imageUrl: 'https://example.com/images/mercedes-ev.jpg',
-        relatedStockIds: ['MBG'],
+        relatedAssetIds: ['MBG'],
         category: 'analysis',
       ),
       NewsArticle(
         id: 'news_4',
         title: 'European Markets Show Resilience Amid Global Uncertainty',
-        summary: 'European stock markets demonstrate stability despite ongoing global economic challenges.',
+        summary: 'European asset markets demonstrate stability despite ongoing global economic challenges.',
         content: 'European equity markets showed remarkable resilience today, with the DAX, CAC 40, and FTSE 100 all posting gains despite concerns about global economic growth...',
         source: 'MarketWatch',
         publishedAt: now.subtract(Duration(hours: random.nextInt(96))),
-        relatedStockIds: ['SAP', 'BASF', 'MBG'],
+        relatedAssetIds: ['SAP', 'BASF', 'MBG'],
         category: 'market',
       ),
       NewsArticle(
@@ -165,7 +165,7 @@ class NewsService {
         content: 'Environmental, social, and governance (ESG) factors are becoming increasingly important for investors in German industrial companies...',
         source: 'Financial News',
         publishedAt: now.subtract(Duration(hours: random.nextInt(120))),
-        relatedStockIds: ['BASF', 'MBG'],
+        relatedAssetIds: ['BASF', 'MBG'],
         category: 'analysis',
       ),
     ];

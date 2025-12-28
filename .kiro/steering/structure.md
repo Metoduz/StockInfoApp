@@ -23,11 +23,13 @@ lib/
 └── src/
     ├── app.dart           # Main app widget with theme configuration
     ├── models/            # Data models and business logic
-    │   └── stock_item.dart
+    │   └── asset_item.dart
+    ├── strategies/        # Trading strategies
+    │   └── trendline.dart
     ├── screens/           # Full-screen UI components
-    │   └── stock_list_view.dart
+    │   └── asset_list.dart
     ├── widgets/           # Reusable UI components
-    │   ├── stock_card.dart
+    │   ├── asset_card.dart
     │   └── hint_card.dart
     └── localization/      # Internationalization files
         └── app_en.arb
@@ -37,12 +39,13 @@ lib/
 
 ### Widget Organization
 - **Screens**: Full-page widgets that represent app routes (`/screens/`)
-- **Widgets**: Reusable UI components (`/widgets/`)
 - **Models**: Data classes with business logic (`/models/`)
+- **Widgets**: Reusable UI components (`/widgets/`)
+- Create extra file for bigger lose UI components (widgets)
 
 ### Naming Conventions
-- **Files**: Use snake_case (e.g., `stock_list_view.dart`)
-- **Classes**: Use PascalCase (e.g., `StockListView`)
+- **Files**: Use snake_case (e.g., `asset_list.dart`)
+- **Classes**: Use PascalCase (e.g., `AssetList`)
 - **Variables**: Use camelCase (e.g., `currentValue`)
 - **Constants**: Use lowerCamelCase with `const` (e.g., `const routeName`)
 
@@ -52,8 +55,8 @@ lib/
 - State is managed at the widget level where needed
 
 ### Model Structure
-- **StockItem**: Main data model with calculated properties
-- **StockHint**: Supporting model for trading analysis data
+- **AssetItem**: Main data model with calculated properties
+- **AssetHint**: Supporting model for trading analysis data
 - Models include `copyWith()` methods for immutability
 - Helper getters for calculated values (e.g., `calculatedDayChange`)
 

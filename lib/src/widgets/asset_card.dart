@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
-import '../models/stock_item.dart';
+import '../models/asset_item.dart';
 import 'hint_card.dart';
 
-class StockCard extends StatefulWidget {
-  final StockItem stock;
+class AssetCard extends StatefulWidget {
+  final AssetItem asset;
   final VoidCallback? onTap;
 
-  const StockCard({
+  const AssetCard({
     super.key,
-    required this.stock,
+    required this.asset,
     this.onTap,
   });
 
   @override
-  State<StockCard> createState() => _StockCardState();
+  State<AssetCard> createState() => _AssetCardState();
 }
 
-class _StockCardState extends State<StockCard> {
+class _AssetCardState extends State<AssetCard> {
   bool _hintsExpanded = false;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isPositiveChange = widget.stock.calculatedDayChange >= 0;
+    final isPositiveChange = widget.asset.calculatedDayChange >= 0;
     final changeColor = isPositiveChange ? Colors.green : Colors.red;
 
     return Card(
@@ -36,13 +36,13 @@ class _StockCardState extends State<StockCard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Stock name and ISIN
+              // Asset name and ISIN
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
                     child: Text(
-                      widget.stock.name,
+                      widget.asset.name,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -50,7 +50,7 @@ class _StockCardState extends State<StockCard> {
                     ),
                   ),
                   Text(
-                    widget.stock.isin ?? widget.stock.id,
+                    widget.asset.isin ?? widget.asset.id,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.6),
                     ),
@@ -64,7 +64,7 @@ class _StockCardState extends State<StockCard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '${widget.stock.currentValue.toStringAsFixed(2)} ${widget.stock.currency}',
+                    '${widget.asset.currentValue.toStringAsFixed(2)} ${widget.asset.currency}',
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -78,8 +78,8 @@ class _StockCardState extends State<StockCard> {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        '${widget.stock.calculatedDayChange.abs().toStringAsFixed(2)} '
-                        '(${widget.stock.calculatedDayChangePercent.abs().toStringAsFixed(2)}%)',
+                        '${widget.asset.calculatedDayChange.abs().toStringAsFixed(2)} '
+                        '(${widget.asset.calculatedDayChangePercent.abs().toStringAsFixed(2)}%)',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: changeColor,
                           fontWeight: FontWeight.w500,
@@ -92,7 +92,7 @@ class _StockCardState extends State<StockCard> {
               const SizedBox(height: 12),
 
               // Hints section (if any)
-              if (widget.stock.hints.isNotEmpty) ...[
+              if (widget.asset.hints.isNotEmpty) ...[
                 Divider(
                   height: 1,
                   color: theme.dividerColor.withValues(alpha: 0.3),
@@ -102,7 +102,7 @@ class _StockCardState extends State<StockCard> {
                 Wrap(
                   spacing: 8,
                   runSpacing: 4,
-                  children: widget.stock.hints.map((hint) {
+                  children: widget.asset.hints.map((hint) {
                     return Chip(
                       label: Text(
                         hint.description,
@@ -148,7 +148,7 @@ class _StockCardState extends State<StockCard> {
                 if (_hintsExpanded) ...[
                   const SizedBox(height: 12),
                   Column(
-                    children: widget.stock.hints.map((hint) {
+                    children: widget.asset.hints.map((hint) {
                       return HintCard(hint: hint);
                     }).toList(),
                   ),

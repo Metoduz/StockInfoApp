@@ -63,7 +63,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Select your preferred currency for displaying stock prices',
+              'Select your preferred currency for displaying asset prices',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
@@ -214,7 +214,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             SwitchListTile(
               title: const Text('Price Alerts'),
-              subtitle: const Text('Receive notifications for stock price alerts'),
+              subtitle: const Text('Receive notifications for asset price alerts'),
               value: settings.enablePriceAlerts,
               onChanged: settings.enableNotifications
                   ? (bool value) {

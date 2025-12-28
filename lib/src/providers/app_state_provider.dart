@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import '../models/stock_item.dart';
+import '../models/asset_item.dart';
 import '../models/user_profile.dart';
 import '../models/app_settings.dart';
 import '../services/storage_service.dart';
@@ -10,7 +10,7 @@ class AppStateProvider extends ChangeNotifier {
   final StorageService _storageService = StorageService();
   
   // Watchlist state
-  List<StockItem> _watchlist = [];
+  List<AssetItem> _watchlist = [];
   
   // User profile state
   UserProfile? _userProfile;
@@ -27,7 +27,7 @@ class AppStateProvider extends ChangeNotifier {
   bool _isLoadingSettings = false;
   
   // Getters
-  List<StockItem> get watchlist => List.unmodifiable(_watchlist);
+  List<AssetItem> get watchlist => List.unmodifiable(_watchlist);
   UserProfile? get userProfile => _userProfile;
   AppSettings? get appSettings => _appSettings;
   int get currentTabIndex => _currentTabIndex;
@@ -69,16 +69,16 @@ class AppStateProvider extends ChangeNotifier {
     }
   }
   
-  Future<void> addToWatchlist(StockItem stock) async {
-    if (!_watchlist.any((item) => item.id == stock.id)) {
-      _watchlist.add(stock);
+  Future<void> addToWatchlist(AssetItem asset) async {
+    if (!_watchlist.any((item) => item.id == asset.id)) {
+      _watchlist.add(asset);
       notifyListeners();
       await _saveWatchlist();
     }
   }
   
-  Future<void> removeFromWatchlist(String stockId) async {
-    _watchlist.removeWhere((item) => item.id == stockId);
+  Future<void> removeFromWatchlist(String assetId) async {
+    _watchlist.removeWhere((item) => item.id == assetId);
     notifyListeners();
     await _saveWatchlist();
   }
@@ -87,7 +87,7 @@ class AppStateProvider extends ChangeNotifier {
     if (oldIndex < newIndex) {
       newIndex -= 1;
     }
-    final StockItem item = _watchlist.removeAt(oldIndex);
+    final AssetItem item = _watchlist.removeAt(oldIndex);
     _watchlist.insert(newIndex, item);
     notifyListeners();
     await _saveWatchlist();
@@ -164,7 +164,7 @@ class AppStateProvider extends ChangeNotifier {
   // Initialize with default data when storage fails
   void _initializeDefaultWatchlist() {
     _watchlist = [
-      StockItem(
+      AssetItem(
         id: 'BASF11',
         isin: 'DE000BASF111',
         name: 'BASF SE',
@@ -174,9 +174,9 @@ class AppStateProvider extends ChangeNotifier {
         hints: [],
         lastUpdated: DateTime.now(),
         isInWatchlist: true,
-        primaryIdentifierType: StockIdentifierType.isin,
+        primaryIdentifierType: AssetIdentifierType.isin,
       ),
-      StockItem(
+      AssetItem(
         id: 'SAP',
         isin: 'DE0007164600',
         name: 'SAP SE',
@@ -186,7 +186,7 @@ class AppStateProvider extends ChangeNotifier {
         hints: [],
         lastUpdated: DateTime.now(),
         isInWatchlist: true,
-        primaryIdentifierType: StockIdentifierType.isin,
+        primaryIdentifierType: AssetIdentifierType.isin,
       ),
     ];
   }

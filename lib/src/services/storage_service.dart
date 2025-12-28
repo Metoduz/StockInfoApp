@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/stock_item.dart';
+import '../models/asset_item.dart';
 import '../models/user_profile.dart';
 import '../models/app_settings.dart';
 import '../models/transaction.dart';
-import '../models/stock_alert.dart';
+import '../models/asset_alert.dart';
 
 class StorageService {
   static const String _watchlistKey = 'watchlist';
@@ -17,17 +17,17 @@ class StorageService {
   static const String _legalDocumentNotificationsKey = 'legal_document_notifications';
   static const String _lastLegalNotificationTimeKey = 'last_legal_notification_time';
 
-  Future<void> saveWatchlist(List<StockItem> stocks) async {
+  Future<void> saveWatchlist(List<AssetItem> assets) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final stocksJson = stocks.map((stock) => _stockToJson(stock)).toList();
-      await prefs.setString(_watchlistKey, jsonEncode(stocksJson));
+      final assetJson = assets.map((asset) => _assetToJson(asset)).toList();
+      await prefs.setString(_watchlistKey, jsonEncode(assetJson));
     } catch (e) {
       throw Exception('Failed to save watchlist: $e');
     }
   }
 
-  Future<List<StockItem>> loadWatchlist() async {
+  Future<List<AssetItem>> loadWatchlist() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final watchlistString = prefs.getString(_watchlistKey);
@@ -36,8 +36,8 @@ class StorageService {
         return [];
       }
 
-      final List<dynamic> stocksJson = jsonDecode(watchlistString);
-      return stocksJson.map((json) => _stockFromJson(json)).toList();
+      final List<dynamic> assetJson = jsonDecode(watchlistString);
+      return assetJson.map((json) => _assetFromJson(json)).toList();
     } catch (e) {
       throw Exception('Failed to load watchlist: $e');
     }
@@ -124,8 +124,8 @@ class StorageService {
     }
   }
 
-  // Stock Alerts methods
-  Future<void> saveAlerts(List<StockAlert> alerts) async {
+  // Asset Alerts methods
+  Future<void> saveAlerts(List<AssetAlert> alerts) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final alertsJson = alerts.map((alert) => _alertToJson(alert)).toList();
@@ -135,7 +135,7 @@ class StorageService {
     }
   }
 
-  Future<List<StockAlert>> loadAlerts() async {
+  Future<List<AssetAlert>> loadAlerts() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final alertsString = prefs.getString(_alertsKey);
@@ -356,7 +356,7 @@ class StorageService {
       // Export watchlist
       try {
         final watchlist = await loadWatchlist();
-        exportData['watchlist'] = watchlist.map((stock) => _stockToJson(stock)).toList();
+        exportData['watchlist'] = watchlist.map((asset) => _assetToJson(asset)).toList();
       } catch (e) {
         exportData['watchlist'] = [];
         exportData['watchlistError'] = e.toString();
@@ -462,7 +462,7 @@ class StorageService {
       if (importData.containsKey('watchlist') && importData['watchlist'] is List) {
         try {
           final watchlistData = importData['watchlist'] as List<dynamic>;
-          final watchlist = watchlistData.map((json) => _stockFromJson(json)).toList();
+          final watchlist = watchlistData.map((json) => _assetFromJson(json)).toList();
           await saveWatchlist(watchlist);
         } catch (e) {
           hasErrors = true;
@@ -574,23 +574,23 @@ class StorageService {
     }
   }
 
-  Map<String, dynamic> _stockToJson(StockItem stock) {
+  Map<String, dynamic> _assetToJson(AssetItem asset) {
     return {
-      'id': stock.id,
-      'isin': stock.isin,
-      'wkn': stock.wkn,
-      'ticker': stock.ticker,
-      'name': stock.name,
-      'symbol': stock.symbol,
-      'currentValue': stock.currentValue,
-      'previousClose': stock.previousClose,
-      'currency': stock.currency,
-      'lastUpdated': stock.lastUpdated.toIso8601String(),
-      'isInWatchlist': stock.isInWatchlist,
-      'primaryIdentifierType': stock.primaryIdentifierType.name,
-      'dayChange': stock.dayChange,
-      'dayChangePercent': stock.dayChangePercent,
-      'hints': stock.hints.map((hint) => {
+      'id': asset.id,
+      'isin': asset.isin,
+      'wkn': asset.wkn,
+      'ticker': asset.ticker,
+      'name': asset.name,
+      'symbol': asset.symbol,
+      'currentValue': asset.currentValue,
+      'previousClose': asset.previousClose,
+      'currency': asset.currency,
+      'lastUpdated': asset.lastUpdated.toIso8601String(),
+      'isInWatchlist': asset.isInWatchlist,
+      'primaryIdentifierType': asset.primaryIdentifierType.name,
+      'dayChange': asset.dayChange,
+      'dayChangePercent': asset.dayChangePercent,
+      'hints': asset.hints.map((hint) => {
         'type': hint.type,
         'description': hint.description,
         'value': hint.value,
@@ -599,8 +599,8 @@ class StorageService {
     };
   }
 
-  StockItem _stockFromJson(Map<String, dynamic> json) {
-    return StockItem(
+  AssetItem _assetFromJson(Map<String, dynamic> json) {
+    return AssetItem(
       id: json['id'],
       isin: json['isin'],
       wkn: json['wkn'],
@@ -612,14 +612,14 @@ class StorageService {
       currency: json['currency'],
       lastUpdated: DateTime.parse(json['lastUpdated']),
       isInWatchlist: json['isInWatchlist'] ?? true,
-      primaryIdentifierType: StockIdentifierType.values.firstWhere(
+      primaryIdentifierType: AssetIdentifierType.values.firstWhere(
         (e) => e.name == json['primaryIdentifierType'],
-        orElse: () => StockIdentifierType.isin,
+        orElse: () => AssetIdentifierType.isin,
       ),
       dayChange: json['dayChange'],
       dayChangePercent: json['dayChangePercent'],
       hints: (json['hints'] as List<dynamic>?)?.map((hintJson) {
-        return StockHint(
+        return AssetHint(
           type: hintJson['type'],
           description: hintJson['description'],
           value: hintJson['value'],
@@ -707,14 +707,14 @@ class StorageService {
     return Transaction.fromJson(json);
   }
 
-  // StockAlert serialization methods
-  Map<String, dynamic> _alertToJson(StockAlert alert) {
-    // This will be implemented when StockAlert model is created
+  // AssertAlert serialization methods
+  Map<String, dynamic> _alertToJson(AssetAlert alert) {
+    // This will be implemented when AssertAlert model is created
     // For now, return a placeholder structure
     return {
       'id': alert.id,
-      'stockId': alert.stockId,
-      'stockName': alert.stockName,
+      'assertId': alert.assetId,
+      'assertName': alert.assetName,
       'type': alert.type.name,
       'threshold': alert.threshold,
       'isEnabled': alert.isEnabled,
@@ -727,13 +727,13 @@ class StorageService {
     };
   }
 
-  StockAlert _alertFromJson(Map<String, dynamic> json) {
-    // This will be implemented when StockAlert model is created
+  AssetAlert _alertFromJson(Map<String, dynamic> json) {
+    // This will be implemented when AsserAlert model is created
     // For now, return a placeholder implementation
-    return StockAlert(
+    return AssetAlert(
       id: json['id'],
-      stockId: json['stockId'],
-      stockName: json['stockName'],
+      assetId: json['assetId'],
+      assetName: json['assetName'],
       type: AlertType.values.firstWhere(
         (e) => e.name == json['type'],
         orElse: () => AlertType.priceAbove,

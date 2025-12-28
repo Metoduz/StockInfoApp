@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:stockinfoapp/src/widgets/stock_search_dialog.dart';
-import 'package:stockinfoapp/src/models/stock_item.dart';
+import 'package:stockinfoapp/src/widgets/asset_search_dialog.dart';
+import 'package:stockinfoapp/src/models/asset_item.dart';
 
 void main() {
-  group('StockSearchDialog', () {
-    late List<StockItem> availableStocks;
-    late List<StockItem> currentWatchlist;
+  group('AssetSearchDialog', () {
+    late List<AssetItem> availableAssets;
+    late List<AssetItem> currentWatchlist;
 
     setUp(() {
-      availableStocks = [
-        StockItem(
+      availableAssets = [
+        AssetItem(
           id: 'BASF11',
           isin: 'DE000BASF111',
           name: 'BASF SE',
@@ -19,10 +19,10 @@ void main() {
           previousClose: 44.80,
           currency: 'EUR',
           lastUpdated: DateTime.now(),
-          primaryIdentifierType: StockIdentifierType.isin,
+          primaryIdentifierType: AssetIdentifierType.isin,
           isInWatchlist: false,
         ),
-        StockItem(
+        AssetItem(
           id: 'SAP',
           isin: 'DE0007164600',
           name: 'SAP SE',
@@ -31,10 +31,10 @@ void main() {
           previousClose: 180.20,
           currency: 'EUR',
           lastUpdated: DateTime.now(),
-          primaryIdentifierType: StockIdentifierType.isin,
+          primaryIdentifierType: AssetIdentifierType.isin,
           isInWatchlist: false,
         ),
-        StockItem(
+        AssetItem(
           id: 'MBG',
           isin: 'DE0007100000',
           name: 'Mercedes-Benz Group AG',
@@ -43,13 +43,13 @@ void main() {
           previousClose: 67.50,
           currency: 'EUR',
           lastUpdated: DateTime.now(),
-          primaryIdentifierType: StockIdentifierType.isin,
+          primaryIdentifierType: AssetIdentifierType.isin,
           isInWatchlist: false,
         ),
       ];
 
       currentWatchlist = [
-        StockItem(
+        AssetItem(
           id: 'AAPL',
           isin: 'US0378331005',
           name: 'Apple Inc.',
@@ -57,25 +57,25 @@ void main() {
           currentValue: 150.00,
           currency: 'USD',
           lastUpdated: DateTime.now(),
-          primaryIdentifierType: StockIdentifierType.isin,
+          primaryIdentifierType: AssetIdentifierType.isin,
           isInWatchlist: true,
         ),
       ];
     });
 
-    testWidgets('displays search field and available stocks', (WidgetTester tester) async {
-      bool stockSelected = false;
-      StockItem? selectedStock;
+    testWidgets('displays search field and available assets', (WidgetTester tester) async {
+      bool assetSelected = false;
+      AssetItem? selectedAsset;
 
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: StockSearchDialog(
-              availableStocks: availableStocks,
+            body: AssetSearchDialog(
+              availableAssets: availableAssets,
               currentWatchlist: currentWatchlist,
-              onStockSelected: (stock) {
-                stockSelected = true;
-                selectedStock = stock;
+              onAssetSelected: (asset) {
+                assetSelected = true;
+                selectedAsset = asset;
               },
             ),
           ),
@@ -84,25 +84,25 @@ void main() {
 
       // Verify search field is present
       expect(find.byType(TextField), findsOneWidget);
-      expect(find.text('Search stocks'), findsOneWidget);
+      expect(find.text('Search assets'), findsOneWidget);
 
-      // Verify available stocks are displayed (excluding watchlist items)
+      // Verify available assets are displayed (excluding watchlist items)
       expect(find.text('BASF SE'), findsOneWidget);
       expect(find.text('SAP SE'), findsOneWidget);
       expect(find.text('Mercedes-Benz Group AG'), findsOneWidget);
       
-      // Verify watchlist stock is not displayed
+      // Verify watchlist asset is not displayed
       expect(find.text('Apple Inc.'), findsNothing);
     });
 
-    testWidgets('filters stocks based on search query', (WidgetTester tester) async {
+    testWidgets('filters assets based on search query', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: StockSearchDialog(
-              availableStocks: availableStocks,
+            body: AssetSearchDialog(
+              availableAssets: availableAssets,
               currentWatchlist: currentWatchlist,
-              onStockSelected: (stock) {},
+              onAssetSelected: (asset) {},
             ),
           ),
         ),
@@ -118,20 +118,20 @@ void main() {
       expect(find.text('Mercedes-Benz Group AG'), findsNothing);
     });
 
-    testWidgets('prevents duplicate stock selection', (WidgetTester tester) async {
+    testWidgets('prevents duplicate asset selection', (WidgetTester tester) async {
       // Add BASF to watchlist to test duplicate prevention
       final watchlistWithBasf = [
         ...currentWatchlist,
-        availableStocks[0].addToWatchlist(),
+        availableAssets[0].addToWatchlist(),
       ];
 
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: StockSearchDialog(
-              availableStocks: availableStocks,
+            body: AssetSearchDialog(
+              availableAssets: availableAssets,
               currentWatchlist: watchlistWithBasf,
-              onStockSelected: (stock) {},
+              onAssetSelected: (asset) {},
             ),
           ),
         ),
@@ -140,7 +140,7 @@ void main() {
       // BASF should not be available for selection
       expect(find.text('BASF SE'), findsNothing);
       
-      // Other stocks should still be available
+      // Other assets should still be available
       expect(find.text('SAP SE'), findsOneWidget);
       expect(find.text('Mercedes-Benz Group AG'), findsOneWidget);
     });
@@ -149,10 +149,10 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: StockSearchDialog(
-              availableStocks: availableStocks,
+            body: AssetSearchDialog(
+              availableAssets: availableAssets,
               currentWatchlist: currentWatchlist,
-              onStockSelected: (stock) {},
+              onAssetSelected: (asset) {},
             ),
           ),
         ),
@@ -163,46 +163,46 @@ void main() {
       await tester.pump();
 
       // Verify validation message appears
-      expect(find.textContaining('No stocks found matching'), findsOneWidget);
+      expect(find.textContaining('No assets found matching'), findsOneWidget);
     });
 
-    testWidgets('calls onStockSelected when stock is tapped', (WidgetTester tester) async {
-      bool stockSelected = false;
-      StockItem? selectedStock;
+    testWidgets('calls onAssetSelected when asset is tapped', (WidgetTester tester) async {
+      bool assetSelected = false;
+      AssetItem? selectedAsset;
 
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: StockSearchDialog(
-              availableStocks: availableStocks,
+            body: AssetSearchDialog(
+              availableAssets: availableAssets,
               currentWatchlist: currentWatchlist,
-              onStockSelected: (stock) {
-                stockSelected = true;
-                selectedStock = stock;
+              onAssetSelected: (asset) {
+                assetSelected = true;
+                selectedAsset = asset;
               },
             ),
           ),
         ),
       );
 
-      // Tap on BASF stock
+      // Tap on BASF asset
       await tester.tap(find.text('BASF SE'));
       await tester.pump();
 
-      // Verify callback was called with correct stock
-      expect(stockSelected, isTrue);
-      expect(selectedStock?.id, equals('BASF11'));
-      expect(selectedStock?.name, equals('BASF SE'));
+      // Verify callback was called with correct asset
+      expect(assetSelected, isTrue);
+      expect(selectedAsset?.id, equals('BASF11'));
+      expect(selectedAsset?.name, equals('BASF SE'));
     });
 
     testWidgets('shows search hints when no query entered', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: StockSearchDialog(
-              availableStocks: availableStocks,
+            body: AssetSearchDialog(
+              availableAssets: availableAssets,
               currentWatchlist: currentWatchlist,
-              onStockSelected: (stock) {},
+              onAssetSelected: (asset) {},
             ),
           ),
         ),
@@ -211,7 +211,7 @@ void main() {
       // Verify search hints are shown
       expect(find.text('Search Tips:'), findsOneWidget);
       expect(find.textContaining('Company name'), findsOneWidget);
-      expect(find.textContaining('Stock symbol'), findsOneWidget);
+      expect(find.textContaining('Asset symbol'), findsOneWidget);
       expect(find.textContaining('ISIN code'), findsOneWidget);
     });
   });

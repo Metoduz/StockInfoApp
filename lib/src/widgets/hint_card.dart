@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../models/stock_item.dart';
+import '../models/asset_item.dart';
 
 class HintCard extends StatelessWidget {
-  final StockHint hint;
+  final AssetHint hint;
 
   const HintCard({
     super.key,

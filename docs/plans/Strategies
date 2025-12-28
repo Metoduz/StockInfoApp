@@ -10,3 +10,31 @@ CompositeStrategy
 Erweiterte Strategien:
     - Der Nutzer soll in der Lage sein, im Sidemenu unter Strategien, Templates für Strategiekombinationen anzulegen.
     - Diese Kombinationen bestehen aus einer variablen Kombination aus AND und OR verknüpften einfach Strategien.
+
+
+AssetCards:
+AssetCards are the items that are showen in the watchlist and is the parent container to express information for assets 
+
+The AssetCards should be split in 4 parts: AssetInformation, Tags, a list of strategies and a list of active trades.
+
+The asset information part is the main part, always visible in the watchlist. It contains Name, ISIN, WKN and short name for the asset if present on the left side, with a symbol in the left upper corner, which shows which kind of asset it is. The types are Stocks, Resources, CFD, Crypto and whatever other type there is.  On the right side of the information there should be a daily graph of the assets value of the past week/month depending on the option picked in settings (add it to the settings). Below the Graph there should be the increase or decrease in that time window.
+
+Under the information part there should be a small line with tag items for this asset. Here the user can on creation of this item add tags to it, where he can later search for. These tags should be listed side by side with flowing to the next row if the previous is filled. Max should be 2 rows. After that add "..."
+
+On the bottom of the Card under tags, add two buttons side by side. Both inflate a list of items in the card. One showing the strategies for this asset and the other showing active trades. Both lists start with a button for adding elements to the list.
+
+The strategy segment contains 2 kinds of items:
+
+* TradingStrategy
+* CompositeStrategy
+
+For both options the user can choose to se an alert if the given strategy goal is reached. This ich marked with an red alarm clock symbol on the top left of the strategy item. This can be activated or deactivated with a click on the alarm clock. Gray alarm clock for deactivated.
+Next to the alarm the card shows wether its a long or a short trade.
+On click of the item, a page will open, where the user can edit the strategy.
+The TradingStrategy is an element that contains information to the specific traging strategy. For the strategies usable add another folder containing only strategies. These strategies could be for example: Trendline, Eliott waves or just a buy area
+The CompositeStrategy is a conjunction of multiple TradingStrategies connected with AND or OR in any way of combination.
+Create a possibility to save CompositeStrategy conjunctions as a template for future uses in the menu.
+
+The active trade section shows a list of active trades the user can add to the list. The item shows if its a long or short trade, the quantity, the buy value, aswell as the current winnings/losses in percentage and total. The user can also add a stop loss, which can include a fix value or a trailing stop loss with value or percentage. Also there can be a notice section, which shows a symbol in the card if its filled. The Notice text is not visible in the card. Add a delete and a close button to the right side of the section. Delete should open a accept dialog. With close, the user can close the trade with a value he sold for. This buy and sell information will be saved for the overall performance metrics as a closed transaction.
+
+On click on an active trade, it will show a more detailed page, where the notice is shown and the item can be edited.

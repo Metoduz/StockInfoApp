@@ -1,33 +1,33 @@
 import 'package:flutter/material.dart';
-import '../models/stock_item.dart';
+import '../models/asset_item.dart';
 
-class StockSearchDialog extends StatefulWidget {
-  final List<StockItem> availableStocks;
-  final List<StockItem> currentWatchlist;
-  final Function(StockItem) onStockSelected;
+class AssetSearchDialog extends StatefulWidget {
+  final List<AssetItem> availableAssets;
+  final List<AssetItem> currentWatchlist;
+  final Function(AssetItem) onAssetSelected;
 
-  const StockSearchDialog({
+  const AssetSearchDialog({
     super.key,
-    required this.availableStocks,
+    required this.availableAssets,
     required this.currentWatchlist,
-    required this.onStockSelected,
+    required this.onAssetSelected,
   });
 
   @override
-  State<StockSearchDialog> createState() => _StockSearchDialogState();
+  State<AssetSearchDialog> createState() => _AssetSearchDialogState();
 }
 
-class _StockSearchDialogState extends State<StockSearchDialog> {
+class _AssetSearchDialogState extends State<AssetSearchDialog> {
   final TextEditingController _searchController = TextEditingController();
-  List<StockItem> _filteredStocks = [];
+  List<AssetItem> _filteredAssets = [];
   String _validationMessage = '';
   bool _isSearching = false;
 
   @override
   void initState() {
     super.initState();
-    _filteredStocks = _getAvailableStocks();
-    _searchController.addListener(_filterStocks);
+    _filteredAssets = _getAvailableAssets();
+    _searchController.addListener(_filterAssets);
   }
 
   @override
@@ -36,66 +36,66 @@ class _StockSearchDialogState extends State<StockSearchDialog> {
     super.dispose();
   }
 
-  /// Get stocks that are not already in the watchlist
-  List<StockItem> _getAvailableStocks() {
-    final watchlistIds = widget.currentWatchlist.map((stock) => stock.id).toSet();
+  /// Get assets that are not already in the watchlist
+  List<AssetItem> _getAvailableAssets() {
+    final watchlistIds = widget.currentWatchlist.map((asset) => asset.id).toSet();
     final watchlistIsins = widget.currentWatchlist
-        .where((stock) => stock.isin != null)
-        .map((stock) => stock.isin!)
+        .where((asset) => asset.isin != null)
+        .map((asset) => asset.isin!)
         .toSet();
-    final watchlistSymbols = widget.currentWatchlist.map((stock) => stock.symbol).toSet();
+    final watchlistSymbols = widget.currentWatchlist.map((asset) => asset.symbol).toSet();
 
-    return widget.availableStocks.where((stock) {
+    return widget.availableAssets.where((asset) {
       // Check for duplicate by ID
-      if (watchlistIds.contains(stock.id)) return false;
+      if (watchlistIds.contains(asset.id)) return false;
       
       // Check for duplicate by ISIN if available
-      if (stock.isin != null && watchlistIsins.contains(stock.isin!)) return false;
+      if (asset.isin != null && watchlistIsins.contains(asset.isin!)) return false;
       
       // Check for duplicate by symbol (less reliable but useful)
-      if (watchlistSymbols.contains(stock.symbol)) return false;
+      if (watchlistSymbols.contains(asset.symbol)) return false;
       
       return true;
     }).toList();
   }
 
-  void _filterStocks() {
+  void _filterAssets() {
     final query = _searchController.text.toLowerCase().trim();
     setState(() {
       _isSearching = query.isNotEmpty;
       _validationMessage = '';
       
       if (query.isEmpty) {
-        _filteredStocks = _getAvailableStocks();
+        _filteredAssets = _getAvailableAssets();
       } else {
-        _filteredStocks = _getAvailableStocks().where((stock) {
-          return _matchesSearchQuery(stock, query);
+        _filteredAssets = _getAvailableAssets().where((asset) {
+          return _matchesSearchQuery(asset, query);
         }).toList();
         
         // Validate search results
-        if (_filteredStocks.isEmpty && query.length >= 2) {
+        if (_filteredAssets.isEmpty && query.length >= 2) {
           _validationMessage = _getValidationMessage(query);
         }
       }
     });
   }
 
-  /// Check if a stock matches the search query
-  bool _matchesSearchQuery(StockItem stock, String query) {
+  /// Check if a asset matches the search query
+  bool _matchesSearchQuery(AssetItem asset, String query) {
     // Match by name (case insensitive)
-    if (stock.name.toLowerCase().contains(query)) return true;
+    if (asset.name.toLowerCase().contains(query)) return true;
     
     // Match by symbol (case insensitive)
-    if (stock.symbol.toLowerCase().contains(query)) return true;
+    if (asset.symbol.toLowerCase().contains(query)) return true;
     
     // Match by ISIN (case insensitive)
-    if (stock.isin?.toLowerCase().contains(query) ?? false) return true;
+    if (asset.isin?.toLowerCase().contains(query) ?? false) return true;
     
     // Match by WKN (case insensitive)
-    if (stock.wkn?.toLowerCase().contains(query) ?? false) return true;
+    if (asset.wkn?.toLowerCase().contains(query) ?? false) return true;
     
     // Match by ticker (case insensitive)
-    if (stock.ticker?.toLowerCase().contains(query) ?? false) return true;
+    if (asset.ticker?.toLowerCase().contains(query) ?? false) return true;
     
     return false;
   }
@@ -104,65 +104,65 @@ class _StockSearchDialogState extends State<StockSearchDialog> {
   String _getValidationMessage(String query) {
     // Check if the query looks like an ISIN (12 characters, alphanumeric)
     if (query.length == 12 && RegExp(r'^[A-Z0-9]+$', caseSensitive: false).hasMatch(query)) {
-      return 'ISIN "$query" not found in available stocks';
+      return 'ISIN "$query" not found in available assets';
     }
     
-    // Check if the query looks like a stock symbol (2-5 characters, letters)
+    // Check if the query looks like a asset symbol (2-5 characters, letters)
     if (query.length >= 2 && query.length <= 5 && RegExp(r'^[A-Z]+$', caseSensitive: false).hasMatch(query)) {
-      return 'Symbol "$query" not found in available stocks';
+      return 'Symbol "$query" not found in available assets';
     }
     
     // Check if it might be a duplicate
-    final isDuplicate = widget.currentWatchlist.any((stock) =>
-        stock.name.toLowerCase().contains(query) ||
-        stock.symbol.toLowerCase().contains(query) ||
-        (stock.isin?.toLowerCase().contains(query) ?? false));
+    final isDuplicate = widget.currentWatchlist.any((asset) =>
+        asset.name.toLowerCase().contains(query) ||
+        asset.symbol.toLowerCase().contains(query) ||
+        (asset.isin?.toLowerCase().contains(query) ?? false));
     
     if (isDuplicate) {
-      return 'Stock matching "$query" is already in your watchlist';
+      return 'Asset matching "$query" is already in your watchlist';
     }
     
-    return 'No stocks found matching "$query"';
+    return 'No assets found matching "$query"';
   }
 
-  /// Validate if a stock can be added (additional validation beyond filtering)
-  bool _canAddStock(StockItem stock) {
+  /// Validate if a asset can be added (additional validation beyond filtering)
+  bool _canAddAsset(AssetItem asset) {
     // Check for exact ID match
-    if (widget.currentWatchlist.any((item) => item.id == stock.id)) {
+    if (widget.currentWatchlist.any((item) => item.id == asset.id)) {
       return false;
     }
     
     // Check for ISIN match if available
-    if (stock.isin != null && 
-        widget.currentWatchlist.any((item) => item.isin == stock.isin)) {
+    if (asset.isin != null && 
+        widget.currentWatchlist.any((item) => item.isin == asset.isin)) {
       return false;
     }
     
     // Check for symbol match (less strict, but useful for preventing obvious duplicates)
     if (widget.currentWatchlist.any((item) => 
-        item.symbol == stock.symbol && item.name == stock.name)) {
+        item.symbol == asset.symbol && item.name == asset.name)) {
       return false;
     }
     
     return true;
   }
 
-  void _selectStock(StockItem stock) {
-    if (!_canAddStock(stock)) {
+  void _selectAsset(AssetItem asset) {
+    if (!_canAddAsset(asset)) {
       setState(() {
-        _validationMessage = '${stock.name} is already in your watchlist';
+        _validationMessage = '${asset.name} is already in your watchlist';
       });
       return;
     }
     
-    widget.onStockSelected(stock);
+    widget.onAssetSelected(asset);
     Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Add Stock to Watchlist'),
+      title: const Text('Add Asset to Watchlist'),
       content: SizedBox(
         width: double.maxFinite,
         height: 450,
@@ -174,7 +174,7 @@ class _StockSearchDialogState extends State<StockSearchDialog> {
             const SizedBox(height: 8),
             _buildSearchHints(),
             const SizedBox(height: 16),
-            Expanded(child: _buildStockList()),
+            Expanded(child: _buildAssetList()),
           ],
         ),
       ),
@@ -191,7 +191,7 @@ class _StockSearchDialogState extends State<StockSearchDialog> {
     return TextField(
       controller: _searchController,
       decoration: InputDecoration(
-        labelText: 'Search stocks',
+        labelText: 'Search assets',
         hintText: 'Enter name, symbol, ISIN, or WKN',
         prefixIcon: const Icon(Icons.search),
         suffixIcon: _searchController.text.isNotEmpty
@@ -270,7 +270,7 @@ class _StockSearchDialogState extends State<StockSearchDialog> {
           const SizedBox(height: 4),
           Text(
             '• Company name (e.g., "BASF", "Mercedes")\n'
-            '• Stock symbol (e.g., "BAS", "MBG")\n'
+            '• Asset symbol (e.g., "BAS", "MBG")\n'
             '• ISIN code (e.g., "DE000BASF111")',
             style: TextStyle(
               color: Colors.blue.shade700,
@@ -282,16 +282,16 @@ class _StockSearchDialogState extends State<StockSearchDialog> {
     );
   }
 
-  Widget _buildStockList() {
-    if (_filteredStocks.isEmpty) {
+  Widget _buildAssetList() {
+    if (_filteredAssets.isEmpty) {
       return _buildEmptyState();
     }
 
     return ListView.builder(
-      itemCount: _filteredStocks.length,
+      itemCount: _filteredAssets.length,
       itemBuilder: (context, index) {
-        final stock = _filteredStocks[index];
-        return _buildStockListItem(stock);
+        final asset = _filteredAssets[index];
+        return _buildAssetListItem(asset);
       },
     );
   }
@@ -305,7 +305,7 @@ class _StockSearchDialogState extends State<StockSearchDialog> {
             Icon(Icons.search, size: 48, color: Colors.grey),
             SizedBox(height: 16),
             Text(
-              'Start typing to search for stocks',
+              'Start typing to search for assets',
               style: TextStyle(color: Colors.grey, fontSize: 16),
             ),
           ],
@@ -320,7 +320,7 @@ class _StockSearchDialogState extends State<StockSearchDialog> {
           Icon(Icons.search_off, size: 48, color: Colors.grey),
           SizedBox(height: 16),
           Text(
-            'No stocks found',
+            'No assets found',
             style: TextStyle(color: Colors.grey, fontSize: 16),
           ),
           SizedBox(height: 8),
@@ -333,8 +333,8 @@ class _StockSearchDialogState extends State<StockSearchDialog> {
     );
   }
 
-  Widget _buildStockListItem(StockItem stock) {
-    final canAdd = _canAddStock(stock);
+  Widget _buildAssetListItem(AssetItem asset) {
+    final canAdd = _canAddAsset(asset);
     
     return ListTile(
       leading: CircleAvatar(
@@ -346,7 +346,7 @@ class _StockSearchDialogState extends State<StockSearchDialog> {
         ),
       ),
       title: Text(
-        stock.name,
+        asset.name,
         style: TextStyle(
           fontWeight: FontWeight.w500,
           color: canAdd ? null : Colors.grey.shade600,
@@ -355,7 +355,7 @@ class _StockSearchDialogState extends State<StockSearchDialog> {
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('${stock.symbol} • ${stock.isin ?? stock.id}'),
+          Text('${asset.symbol} • ${asset.isin ?? asset.id}'),
           if (!canAdd)
             Text(
               'Already in watchlist',
@@ -372,24 +372,24 @@ class _StockSearchDialogState extends State<StockSearchDialog> {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Text(
-            '${stock.currentValue.toStringAsFixed(2)} ${stock.currency}',
+            '${asset.currentValue.toStringAsFixed(2)} ${asset.currency}',
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 14,
             ),
           ),
-          if (stock.previousClose != null)
+          if (asset.previousClose != null)
             Text(
-              '${stock.calculatedDayChange >= 0 ? '+' : ''}${stock.calculatedDayChange.toStringAsFixed(2)}',
+              '${asset.calculatedDayChange >= 0 ? '+' : ''}${asset.calculatedDayChange.toStringAsFixed(2)}',
               style: TextStyle(
-                color: stock.calculatedDayChange >= 0 ? Colors.green : Colors.red,
+                color: asset.calculatedDayChange >= 0 ? Colors.green : Colors.red,
                 fontSize: 12,
               ),
             ),
         ],
       ),
       enabled: canAdd,
-      onTap: canAdd ? () => _selectStock(stock) : null,
+      onTap: canAdd ? () => _selectAsset(asset) : null,
     );
   }
 }

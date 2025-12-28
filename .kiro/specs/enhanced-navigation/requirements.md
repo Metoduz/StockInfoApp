@@ -12,7 +12,7 @@ This specification defines the enhancement of the Stock Info App with a comprehe
 - **Side_Menu**: Drawer-based navigation for app settings and user features
 - **User_Profile**: User's personal information and preferences
 - **Trading_History**: Record of user's past stock transactions
-- **Currency_Settings**: User's preferred currency for displaying stock values
+- **App_Settings**: User's preferred settings for displaying information
 - **Stock_Item**: Individual stock entry with ISIN, name, and market data
 - **News_Feed**: Financial news related to stocks and markets
 - **Alert_System**: Notification system for stock price changes and events
@@ -25,7 +25,7 @@ This specification defines the enhancement of the Stock Info App with a comprehe
 
 #### Acceptance Criteria
 
-1. WHEN the app launches, THE Stock_App SHALL display a bottom navigation bar with three tabs
+1. WHEN the app launches, THE Stock_App SHALL display a bottom navigation bar with three tabs staring at the "Main" tab displaying the watchlist
 2. WHEN a user taps the "Main" tab, THE Stock_App SHALL display the watchlist screen
 3. WHEN a user taps the "News" tab, THE Stock_App SHALL display the financial news feed
 4. WHEN a user taps the "Alerts" tab, THE Stock_App SHALL display the user's stock alerts
@@ -69,17 +69,17 @@ This specification defines the enhancement of the Stock Info App with a comprehe
 4. WHEN profile changes are saved, THE Stock_App SHALL update the display throughout the app
 5. THE Stock_App SHALL provide feedback when profile updates are successful or fail
 
-### Requirement 5: Currency Settings
+### Requirement 5: App Settings
 
-**User Story:** As a user, I want to set my preferred currency, so that stock values are displayed in my local currency.
+**User Story:** As a user, I want to set my preferred information, so that for example stock values are displayed in my local currency.
 
 #### Acceptance Criteria
 
-1. WHEN a user accesses currency settings, THE Stock_App SHALL display available currency options
+1. WHEN a user accesses settings, THE Stock_App SHALL display options
 2. WHEN a user selects a currency, THE Stock_App SHALL update all stock displays to use the selected currency
-3. THE Currency_Settings SHALL persist the user's choice to local storage
+3. THE App_Settings SHALL persist the user's choice to local storage
 4. WHEN currency is changed, THE Stock_App SHALL convert existing stock values using current exchange rates
-5. THE Stock_App SHALL support at least EUR, USD, and GBP currencies
+5. THE Stock_App SHALL support at least EUR, USD, CAD, and GBP currencies
 
 ### Requirement 6: Trading History
 
@@ -107,15 +107,13 @@ This specification defines the enhancement of the Stock Info App with a comprehe
 
 ### Requirement 8: Alert System
 
-**User Story:** As a user, I want to set up alerts for stock price changes, so that I can be notified of important market movements.
+**User Story:** As a user, I want all my alerts for reaching my goals in a list, so that I have a history of past alerts.
 
 #### Acceptance Criteria
 
-1. WHEN a user accesses the alerts tab, THE Stock_App SHALL display their configured stock alerts
-2. WHEN a user creates an alert, THE Stock_App SHALL allow setting price thresholds and notification preferences
-3. WHEN an alert condition is met, THE Stock_App SHALL send a notification to the user
-4. THE Alert_System SHALL support both price increase and decrease alerts
-5. WHEN a user disables an alert, THE Stock_App SHALL stop monitoring that condition
+1. WHEN a user accesses the alerts tab, THE Stock_App SHALL display a history of received stock alerts, limited by the last 100 but extendable if the user chooses to
+2. WHEN an alert is incoming from an remote source, THE Stock_App SHALL send a notification to the user and adds the alert to the list
+3. WHEN a user disables an alert, THE Stock_App SHALL stops the notification but still adds the alert to the list
 
 ### Requirement 9: Data Persistence
 
@@ -125,7 +123,7 @@ This specification defines the enhancement of the Stock Info App with a comprehe
 
 1. WHEN the app starts, THE Stock_App SHALL load user preferences from local storage
 2. WHEN user data changes, THE Stock_App SHALL automatically save changes to local storage
-3. THE Stock_App SHALL persist watchlist, user profile, currency settings, and trading history
+3. THE Stock_App SHALL persist watchlist with trading strategies, user profile, settings, and trading history
 4. WHEN local storage is unavailable, THE Stock_App SHALL gracefully handle the error and use default values
 5. THE Stock_App SHALL provide an option to export user data for backup purposes
 

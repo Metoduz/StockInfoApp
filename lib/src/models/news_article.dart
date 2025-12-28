@@ -21,8 +21,8 @@ class NewsArticle {
   /// Optional image URL for the article
   final String? imageUrl;
   
-  /// List of stock IDs that this article relates to
-  final List<String> relatedStockIds;
+  /// List of asset IDs that this article relates to
+  final List<String> relatedAssetIds;
   
   /// Article category (e.g., "market", "earnings", "analysis")
   final String category;
@@ -35,7 +35,7 @@ class NewsArticle {
     required this.source,
     required this.publishedAt,
     this.imageUrl,
-    required this.relatedStockIds,
+    required this.relatedAssetIds,
     required this.category,
   });
 
@@ -48,7 +48,7 @@ class NewsArticle {
     String? source,
     DateTime? publishedAt,
     String? imageUrl,
-    List<String>? relatedStockIds,
+    List<String>? relatedAssetIds,
     String? category,
   }) {
     return NewsArticle(
@@ -59,27 +59,27 @@ class NewsArticle {
       source: source ?? this.source,
       publishedAt: publishedAt ?? this.publishedAt,
       imageUrl: imageUrl ?? this.imageUrl,
-      relatedStockIds: relatedStockIds ?? this.relatedStockIds,
+      relatedAssetIds: relatedAssetIds ?? this.relatedAssetIds,
       category: category ?? this.category,
     );
   }
 
-  /// Checks if this article is related to any of the given stock IDs
-  bool isRelatedToStocks(List<String> stockIds) {
-    if (stockIds.isEmpty || relatedStockIds.isEmpty) {
+  /// Checks if this article is related to any of the given asset IDs
+  bool isRelatedToAssets(List<String> assetIds) {
+    if (assetIds.isEmpty || relatedAssetIds.isEmpty) {
       return false;
     }
-    return relatedStockIds.any((stockId) => stockIds.contains(stockId));
+    return relatedAssetIds.any((assetId) => assetIds.contains(assetId));
   }
 
-  /// Checks if this article is related to a specific stock ID
-  bool isRelatedToStock(String stockId) {
-    return relatedStockIds.contains(stockId);
+  /// Checks if this article is related to a specific asset ID
+  bool isRelatedToAsset(String assetId) {
+    return relatedAssetIds.contains(assetId);
   }
 
-  /// Gets the number of related stocks from a watchlist
-  int getRelatedStockCount(List<String> watchlistStockIds) {
-    return relatedStockIds.where((stockId) => watchlistStockIds.contains(stockId)).length;
+  /// Gets the number of related assets from a watchlist
+  int getRelatedAssetCount(List<String> watchlistAssetIds) {
+    return relatedAssetIds.where((assetId) => watchlistAssetIds.contains(assetId)).length;
   }
 
   /// Creates a NewsArticle from JSON data
@@ -92,7 +92,7 @@ class NewsArticle {
       source: json['source'] as String,
       publishedAt: DateTime.parse(json['publishedAt'] as String),
       imageUrl: json['imageUrl'] as String?,
-      relatedStockIds: List<String>.from(json['relatedStockIds'] as List),
+      relatedAssetIds: List<String>.from(json['relatedAssetIds'] as List),
       category: json['category'] as String,
     );
   }
@@ -107,7 +107,7 @@ class NewsArticle {
       'source': source,
       'publishedAt': publishedAt.toIso8601String(),
       'imageUrl': imageUrl,
-      'relatedStockIds': relatedStockIds,
+      'relatedAssetIds': relatedAssetIds,
       'category': category,
     };
   }
@@ -123,7 +123,7 @@ class NewsArticle {
         other.source == source &&
         other.publishedAt == publishedAt &&
         other.imageUrl == imageUrl &&
-        _listEquals(other.relatedStockIds, relatedStockIds) &&
+        _listEquals(other.relatedAssetIds, relatedAssetIds) &&
         other.category == category;
   }
 
@@ -137,14 +137,14 @@ class NewsArticle {
       source,
       publishedAt,
       imageUrl,
-      Object.hashAll(relatedStockIds),
+      Object.hashAll(relatedAssetIds),
       category,
     );
   }
 
   @override
   String toString() {
-    return 'NewsArticle(id: $id, title: $title, source: $source, publishedAt: $publishedAt, relatedStockIds: $relatedStockIds)';
+    return 'NewsArticle(id: $id, title: $title, source: $source, publishedAt: $publishedAt, relatedAssetIds: $relatedAssetIds)';
   }
 }
 

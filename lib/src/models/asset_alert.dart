@@ -49,10 +49,10 @@ class NotificationSettings {
   }
 }
 
-class StockAlert {
+class AssetAlert {
   final String id;
-  final String stockId;
-  final String stockName;
+  final String assetId;
+  final String assetName;
   final AlertType type;
   final double threshold;
   final bool isEnabled;
@@ -63,10 +63,10 @@ class StockAlert {
   final AlertSource source;
   final Map<String, dynamic>? metadata;
 
-  const StockAlert({
+  const AssetAlert({
     required this.id,
-    required this.stockId,
-    required this.stockName,
+    required this.assetId,
+    required this.assetName,
     required this.type,
     required this.threshold,
     this.isEnabled = true,
@@ -78,10 +78,10 @@ class StockAlert {
     this.metadata,
   });
 
-  StockAlert copyWith({
+  AssetAlert copyWith({
     String? id,
-    String? stockId,
-    String? stockName,
+    String? assetId,
+    String? assetName,
     AlertType? type,
     double? threshold,
     bool? isEnabled,
@@ -92,10 +92,10 @@ class StockAlert {
     AlertSource? source,
     Map<String, dynamic>? metadata,
   }) {
-    return StockAlert(
+    return AssetAlert(
       id: id ?? this.id,
-      stockId: stockId ?? this.stockId,
-      stockName: stockName ?? this.stockName,
+      assetId: assetId ?? this.assetId,
+      assetName: assetName ?? this.assetName,
       type: type ?? this.type,
       threshold: threshold ?? this.threshold,
       isEnabled: isEnabled ?? this.isEnabled,
@@ -111,7 +111,7 @@ class StockAlert {
   /// Validates the alert configuration
   bool isValid() {
     // Check if required fields are present
-    if (id.isEmpty || stockId.isEmpty || stockName.isEmpty) {
+    if (id.isEmpty || assetId.isEmpty || assetName.isEmpty) {
       return false;
     }
 
@@ -132,8 +132,8 @@ class StockAlert {
   /// Returns validation error message if alert is invalid
   String? getValidationError() {
     if (id.isEmpty) return 'Alert ID cannot be empty';
-    if (stockId.isEmpty) return 'Stock ID cannot be empty';
-    if (stockName.isEmpty) return 'Stock name cannot be empty';
+    if (assetId.isEmpty) return 'Asset ID cannot be empty';
+    if (assetName.isEmpty) return 'Asset name cannot be empty';
 
     switch (type) {
       case AlertType.priceAbove:
@@ -155,7 +155,7 @@ class StockAlert {
     return null;
   }
 
-  /// Checks if the alert condition is met based on current stock data
+  /// Checks if the alert condition is met based on current asset data
   bool shouldTrigger(double currentPrice, double? previousPrice, double? volume) {
     if (!isEnabled || triggeredAt != null) return false;
 
@@ -176,22 +176,22 @@ class StockAlert {
   }
 
   /// Creates a triggered version of this alert
-  StockAlert trigger() {
+  AssetAlert trigger() {
     return copyWith(triggeredAt: DateTime.now());
   }
 
   /// Enables the alert
-  StockAlert enable() {
+  AssetAlert enable() {
     return copyWith(isEnabled: true);
   }
 
   /// Disables the alert
-  StockAlert disable() {
+  AssetAlert disable() {
     return copyWith(isEnabled: false);
   }
 
   /// Resets the alert (clears triggered state)
-  StockAlert reset() {
+  AssetAlert reset() {
     return copyWith(triggeredAt: null);
   }
 
@@ -199,15 +199,15 @@ class StockAlert {
   String getDescription() {
     switch (type) {
       case AlertType.priceAbove:
-        return 'Alert when $stockName price goes above €${threshold.toStringAsFixed(2)}';
+        return 'Alert when $assetName price goes above €${threshold.toStringAsFixed(2)}';
       case AlertType.priceBelow:
-        return 'Alert when $stockName price goes below €${threshold.toStringAsFixed(2)}';
+        return 'Alert when $assetName price goes below €${threshold.toStringAsFixed(2)}';
       case AlertType.percentChange:
-        return 'Alert when $stockName changes by ${threshold.toStringAsFixed(1)}%';
+        return 'Alert when $assetName changes by ${threshold.toStringAsFixed(1)}%';
       case AlertType.volumeSpike:
-        return 'Alert when $stockName volume exceeds ${threshold.toStringAsFixed(0)}';
+        return 'Alert when $assetName volume exceeds ${threshold.toStringAsFixed(0)}';
       case AlertType.newsAlert:
-        return 'Alert for $stockName news updates';
+        return 'Alert for $assetName news updates';
     }
   }
 
@@ -222,8 +222,8 @@ class StockAlert {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'stockId': stockId,
-      'stockName': stockName,
+      'assetId': assetId,
+      'assetName': assetName,
       'type': type.name,
       'threshold': threshold,
       'isEnabled': isEnabled,
@@ -243,11 +243,11 @@ class StockAlert {
   }
 
   /// Creates from JSON
-  factory StockAlert.fromJson(Map<String, dynamic> json) {
-    return StockAlert(
+  factory AssetAlert.fromJson(Map<String, dynamic> json) {
+    return AssetAlert(
       id: json['id'] as String,
-      stockId: json['stockId'] as String,
-      stockName: json['stockName'] as String,
+      assetId: json['assetId'] as String,
+      assetName: json['assetName'] as String,
       type: AlertType.values.firstWhere((e) => e.name == json['type']),
       threshold: (json['threshold'] as num).toDouble(),
       isEnabled: json['isEnabled'] as bool? ?? true,

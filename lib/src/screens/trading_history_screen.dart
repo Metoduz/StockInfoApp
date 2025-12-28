@@ -43,12 +43,12 @@ class _TradingHistoryScreenState extends State<TradingHistoryScreen> {
       final storageService = StorageService();
       final transactions = await storageService.loadTransactions();
       
-      // Get current stock prices for performance calculation
+      // Get current asset prices for performance calculation
       if (!mounted) return;
       final appState = context.read<AppStateProvider>();
       final currentPrices = <String, double>{};
-      for (final stock in appState.watchlist) {
-        currentPrices[stock.id] = stock.currentValue;
+      for (final asset in appState.watchlist) {
+        currentPrices[asset.id] = asset.currentValue;
       }
       
       final performanceMetrics = PerformanceMetrics.fromTransactions(
@@ -78,7 +78,7 @@ class _TradingHistoryScreenState extends State<TradingHistoryScreen> {
     setState(() {
       _filteredTransactions = _transactions.where((transaction) {
         return transaction.matchesFilter(
-          stockSymbol: _searchController.text.isEmpty ? null : _searchController.text,
+          assetSymbol: _searchController.text.isEmpty ? null : _searchController.text,
           startDate: _selectedDateRange?.start,
           endDate: _selectedDateRange?.end,
           transactionType: _selectedTypeFilter,
@@ -291,7 +291,7 @@ class _TradingHistoryScreenState extends State<TradingHistoryScreen> {
           TextField(
             controller: _searchController,
             decoration: InputDecoration(
-              hintText: 'Search by stock symbol...',
+              hintText: 'Search by asset symbol...',
               prefixIcon: const Icon(Icons.search),
               suffixIcon: _searchController.text.isNotEmpty
                   ? IconButton(
@@ -372,7 +372,7 @@ class _TradingHistoryScreenState extends State<TradingHistoryScreen> {
           ),
         ),
         title: Text(
-          transaction.stockName,
+          transaction.assetName,
           style: theme.textTheme.titleMedium,
         ),
         subtitle: Column(
@@ -509,8 +509,8 @@ class _AddTransactionDialog extends StatefulWidget {
 
 class _AddTransactionDialogState extends State<_AddTransactionDialog> {
   final _formKey = GlobalKey<FormState>();
-  final _stockIdController = TextEditingController();
-  final _stockNameController = TextEditingController();
+  final _assetIdController = TextEditingController();
+  final _assetNameController = TextEditingController();
   final _quantityController = TextEditingController();
   final _priceController = TextEditingController();
   final _notesController = TextEditingController();
@@ -522,8 +522,8 @@ class _AddTransactionDialogState extends State<_AddTransactionDialog> {
 
   @override
   void dispose() {
-    _stockIdController.dispose();
-    _stockNameController.dispose();
+    _assetIdController.dispose();
+    _assetNameController.dispose();
     _quantityController.dispose();
     _priceController.dispose();
     _notesController.dispose();
@@ -555,14 +555,14 @@ class _AddTransactionDialogState extends State<_AddTransactionDialog> {
               ),
               const SizedBox(height: 16),
               TextFormField(
-                controller: _stockIdController,
-                decoration: const InputDecoration(labelText: 'Stock ID/Symbol'),
+                controller: _assetIdController,
+                decoration: const InputDecoration(labelText: 'Asset ID/Symbol'),
                 validator: (value) => value?.isEmpty == true ? 'Required' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
-                controller: _stockNameController,
-                decoration: const InputDecoration(labelText: 'Stock Name'),
+                controller: _assetNameController,
+                decoration: const InputDecoration(labelText: 'Asset Name'),
                 validator: (value) => value?.isEmpty == true ? 'Required' : null,
               ),
               const SizedBox(height: 16),
@@ -656,8 +656,8 @@ class _AddTransactionDialogState extends State<_AddTransactionDialog> {
       
       final transaction = Transaction(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
-        stockId: _stockIdController.text,
-        stockName: _stockNameController.text,
+        assetId: _assetIdController.text,
+        assetName: _assetNameController.text,
         type: _selectedType,
         quantity: quantity,
         price: price,

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stockinfoapp/src/navigation/navigation_shell.dart';
 import 'package:stockinfoapp/src/navigation/drawer_menu.dart';
-import 'package:stockinfoapp/src/screens/stock_list_view.dart';
+import 'package:stockinfoapp/src/screens/asset_list.dart';
 import 'package:stockinfoapp/src/screens/news_screen.dart';
 import 'package:stockinfoapp/src/screens/alerts_screen.dart';
 import 'package:stockinfoapp/src/screens/user_profile_screen.dart';
 import 'package:stockinfoapp/src/screens/settings_screen.dart';
 import 'package:stockinfoapp/src/screens/trading_history_screen.dart';
 import 'package:stockinfoapp/src/screens/legal_info_screen.dart';
-import 'package:stockinfoapp/src/widgets/stock_card.dart';
+import 'package:stockinfoapp/src/widgets/asset_card.dart';
 
 void main() {
   group('Navigation Properties', () {
@@ -63,13 +63,13 @@ void main() {
         );
 
         // Start on Main tab (index 0) - this should be the default
-        expect(find.byType(StockListView), findsOneWidget);
+        expect(find.byType(AssetList), findsOneWidget);
         
         // Create some state by opening a stock detail dialog
-        // Find the first stock card and tap it to open details
-        final stockCards = find.byType(StockCard);
-        if (stockCards.evaluate().isNotEmpty) {
-          await tester.tap(stockCards.first);
+        // Find the first asset card and tap it to open details
+        final assetCards = find.byType(AssetCard);
+        if (assetCards.evaluate().isNotEmpty) {
+          await tester.tap(assetCards.first);
           await tester.pumpAndSettle();
           
           // Verify dialog is open
@@ -102,19 +102,19 @@ void main() {
         
         // Verify we're on Alerts tab
         expect(find.byType(AlertsScreen), findsOneWidget);
-        expect(find.text('Stock Alerts'), findsOneWidget);
+        expect(find.text('Asset Alerts'), findsOneWidget);
         
         // Switch back to Main tab (index 0)
         await tester.tap(find.byIcon(Icons.home));
         await tester.pumpAndSettle();
         
         // Verify we're back on Main tab and state is preserved
-        expect(find.byType(StockListView), findsOneWidget);
+        expect(find.byType(AssetList), findsOneWidget);
         
-        // Verify the stock list is still there (state preserved)
-        expect(find.byType(StockCard), findsWidgets);
+        // Verify the asset list is still there (state preserved)
+        expect(find.byType(AssetCard), findsWidgets);
         
-        // Verify specific stock items are still present (content preserved)
+        // Verify specific asset items are still present (content preserved)
         expect(find.text('BASF SE'), findsOneWidget);
         expect(find.text('SAP SE'), findsOneWidget);
         expect(find.text('Mercedes-Benz Group AG'), findsOneWidget);
@@ -123,8 +123,8 @@ void main() {
         expect(find.byType(AlertDialog), findsNothing);
         
         // Test that we can still interact with the preserved state
-        if (stockCards.evaluate().isNotEmpty) {
-          await tester.tap(stockCards.first);
+        if (assetCards.evaluate().isNotEmpty) {
+          await tester.tap(assetCards.first);
           await tester.pumpAndSettle();
           
           // Verify dialog opens (functionality preserved)
@@ -221,7 +221,7 @@ IconData _getTabIcon(int tabIndex) {
 Type _getExpectedScreenType(int tabIndex) {
   switch (tabIndex) {
     case 0:
-      return StockListView;
+      return AssetList;
     case 1:
       return NewsScreen;
     case 2:

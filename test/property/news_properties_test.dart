@@ -4,27 +4,27 @@ import 'package:stockinfoapp/src/services/news_service.dart';
 
 void main() {
   group('News Properties', () {
-    test('Property 13: News Prioritization - For any user watchlist, news articles related to watchlist stocks should be prioritized in the feed',
+    test('Property 13: News Prioritization - For any user watchlist, news articles related to watchlist assets should be prioritized in the feed',
         () async {
       // **Feature: enhanced-navigation, Property 13: News Prioritization**
       // **Validates: Requirements 7.2**
       
       // Test with multiple iterations to verify property holds across different scenarios
       for (int iteration = 0; iteration < 100; iteration++) {
-        // Generate random watchlist stock IDs
-        final watchlistStockIds = _generateRandomStockIds(iteration % 5 + 1); // 1-5 stocks
+        // Generate random watchlist asset IDs
+        final watchlistAssetIds = _generateRandomAssetIds(iteration % 5 + 1); // 1-5 assets
         
         // Generate random news articles with some related to watchlist
-        final allArticles = _generateRandomNewsArticles(iteration % 10 + 5, watchlistStockIds); // 5-14 articles
+        final allArticles = _generateRandomNewsArticles(iteration % 10 + 5, watchlistAssetIds); // 5-14 articles
         
         // Prioritize articles based on watchlist
-        final prioritizedArticles = _prioritizeArticlesByWatchlist(allArticles, watchlistStockIds);
+        final prioritizedArticles = _prioritizeArticlesByWatchlist(allArticles, watchlistAssetIds);
         
         // Verify that watchlist-related articles come first
         int firstNonWatchlistIndex = -1;
         for (int i = 0; i < prioritizedArticles.length; i++) {
           final article = prioritizedArticles[i];
-          final isRelated = article.isRelatedToStocks(watchlistStockIds);
+          final isRelated = article.isRelatedToAssets(watchlistAssetIds);
           
           if (!isRelated && firstNonWatchlistIndex == -1) {
             firstNonWatchlistIndex = i;
@@ -34,14 +34,14 @@ void main() {
           }
         }
         
-        // Verify that watchlist-related articles are sorted by relevance (number of related stocks)
+        // Verify that watchlist-related articles are sorted by relevance (number of related assets)
         final watchlistArticles = prioritizedArticles
-            .where((article) => article.isRelatedToStocks(watchlistStockIds))
+            .where((article) => article.isRelatedToAssets(watchlistAssetIds))
             .toList();
         
         for (int i = 0; i < watchlistArticles.length - 1; i++) {
-          final currentRelevance = watchlistArticles[i].getRelatedStockCount(watchlistStockIds);
-          final nextRelevance = watchlistArticles[i + 1].getRelatedStockCount(watchlistStockIds);
+          final currentRelevance = watchlistArticles[i].getRelatedAssetCount(watchlistAssetIds);
+          final nextRelevance = watchlistArticles[i + 1].getRelatedAssetCount(watchlistAssetIds);
           
           expect(currentRelevance, greaterThanOrEqualTo(nextRelevance),
               reason: 'Watchlist articles should be sorted by relevance (descending)');
@@ -86,7 +86,7 @@ void main() {
         expect(navigationData['content'], equals(article.content));
         expect(navigationData['source'], equals(article.source));
         expect(navigationData['publishedAt'], equals(article.publishedAt));
-        expect(navigationData['relatedStockIds'], equals(article.relatedStockIds));
+        expect(navigationData['relatedAssetIds'], equals(article.relatedAssetIds));
       }
     });
 
@@ -136,41 +136,41 @@ void main() {
   });
 }
 
-/// Generates random stock IDs for testing
-List<String> _generateRandomStockIds(int count) {
-  final stockIds = ['BASF', 'SAP', 'MBG', 'BMW', 'SIE', 'ALV', 'DTE', 'VOW3', 'ADS', 'BAS'];
-  stockIds.shuffle();
-  return stockIds.take(count).toList();
+/// Generates random asset IDs for testing
+List<String> _generateRandomAssetIds(int count) {
+  final assetIds = ['BASF', 'SAP', 'MBG', 'BMW', 'SIE', 'ALV', 'DTE', 'VOW3', 'ADS', 'BAS'];
+  assetIds.shuffle();
+  return assetIds.take(count).toList();
 }
 
-/// Generates random news articles with some related to watchlist stocks
-List<NewsArticle> _generateRandomNewsArticles(int count, List<String> watchlistStockIds) {
+/// Generates random news articles with some related to watchlist assets
+List<NewsArticle> _generateRandomNewsArticles(int count, List<String> watchlistAssetIds) {
   final articles = <NewsArticle>[];
-  final allStockIds = ['BASF', 'SAP', 'MBG', 'BMW', 'SIE', 'ALV', 'DTE', 'VOW3', 'ADS', 'BAS', 'DBK', 'FRE'];
+  final allAssetIds = ['BASF', 'SAP', 'MBG', 'BMW', 'SIE', 'ALV', 'DTE', 'VOW3', 'ADS', 'BAS', 'DBK', 'FRE'];
   
   for (int i = 0; i < count; i++) {
     // Randomly decide if this article should be related to watchlist (50% chance)
-    final shouldBeWatchlistRelated = (i % 2 == 0) && watchlistStockIds.isNotEmpty;
+    final shouldBeWatchlistRelated = (i % 2 == 0) && watchlistAssetIds.isNotEmpty;
     
-    List<String> relatedStockIds;
+    List<String> relatedAssetIds;
     if (shouldBeWatchlistRelated) {
-      // Include some watchlist stocks
-      final numWatchlistStocks = (i % watchlistStockIds.length) + 1;
-      relatedStockIds = watchlistStockIds.take(numWatchlistStocks).toList();
+      // Include some watchlist assets
+      final numWatchlistAssets = (i % watchlistAssetIds.length) + 1;
+      relatedAssetIds = watchlistAssetIds.take(numWatchlistAssets).toList();
       
-      // Optionally add some non-watchlist stocks
+      // Optionally add some non-watchlist assets
       if (i % 3 == 0) {
-        final nonWatchlistStocks = allStockIds.where((id) => !watchlistStockIds.contains(id)).toList();
-        if (nonWatchlistStocks.isNotEmpty) {
-          relatedStockIds.add(nonWatchlistStocks.first);
+        final nonWatchlistAssets = allAssetIds.where((id) => !watchlistAssetIds.contains(id)).toList();
+        if (nonWatchlistAssets.isNotEmpty) {
+          relatedAssetIds.add(nonWatchlistAssets.first);
         }
       }
     } else {
-      // Use only non-watchlist stocks or no stocks
-      final nonWatchlistStocks = allStockIds.where((id) => !watchlistStockIds.contains(id)).toList();
-      final numStocks = i % 3; // 0-2 stocks
-      nonWatchlistStocks.shuffle();
-      relatedStockIds = nonWatchlistStocks.take(numStocks).toList();
+      // Use only non-watchlist assets or no assets
+      final nonWatchlistAssets = allAssetIds.where((id) => !watchlistAssetIds.contains(id)).toList();
+      final numAssets = i % 3; // 0-2 assets
+      nonWatchlistAssets.shuffle();
+      relatedAssetIds = nonWatchlistAssets.take(numAssets).toList();
     }
     
     articles.add(NewsArticle(
@@ -180,7 +180,7 @@ List<NewsArticle> _generateRandomNewsArticles(int count, List<String> watchlistS
       content: 'Content for article $i',
       source: 'Test Source',
       publishedAt: DateTime.now().subtract(Duration(hours: i)),
-      relatedStockIds: relatedStockIds,
+      relatedAssetIds: relatedAssetIds,
       category: 'test',
     ));
   }
@@ -192,10 +192,10 @@ List<NewsArticle> _generateRandomNewsArticles(int count, List<String> watchlistS
 
 /// Generates a single random news article for testing
 NewsArticle _generateRandomNewsArticle(int seed) {
-  final allStockIds = ['BASF', 'SAP', 'MBG', 'BMW', 'SIE', 'ALV', 'DTE', 'VOW3', 'ADS', 'BAS'];
-  final numStocks = seed % 4; // 0-3 stocks
-  allStockIds.shuffle();
-  final relatedStockIds = allStockIds.take(numStocks).toList();
+  final allAssetIds = ['BASF', 'SAP', 'MBG', 'BMW', 'SIE', 'ALV', 'DTE', 'VOW3', 'ADS', 'BAS'];
+  final numAssets = seed % 4; // 0-3 assets
+  allAssetIds.shuffle();
+  final relatedAssetIds = allAssetIds.take(numAssets).toList();
   
   return NewsArticle(
     id: 'test_article_$seed',
@@ -205,14 +205,14 @@ NewsArticle _generateRandomNewsArticle(int seed) {
     source: 'Test Source ${seed % 3 + 1}',
     publishedAt: DateTime.now().subtract(Duration(hours: seed % 48)),
     imageUrl: seed % 2 == 0 ? 'https://example.com/image_$seed.jpg' : null,
-    relatedStockIds: relatedStockIds,
+    relatedAssetIds: relatedAssetIds,
     category: ['market', 'earnings', 'analysis'][seed % 3],
   );
 }
 
-/// Prioritizes articles based on watchlist stocks (mimics the logic from NewsScreen)
-List<NewsArticle> _prioritizeArticlesByWatchlist(List<NewsArticle> articles, List<String> watchlistStockIds) {
-  if (watchlistStockIds.isEmpty) {
+/// Prioritizes articles based on watchlist assets (mimics the logic from NewsScreen)
+List<NewsArticle> _prioritizeArticlesByWatchlist(List<NewsArticle> articles, List<String> watchlistAssetIds) {
+  if (watchlistAssetIds.isEmpty) {
     return articles;
   }
 
@@ -221,17 +221,17 @@ List<NewsArticle> _prioritizeArticlesByWatchlist(List<NewsArticle> articles, Lis
   final otherArticles = <NewsArticle>[];
 
   for (final article in articles) {
-    if (article.isRelatedToStocks(watchlistStockIds)) {
+    if (article.isRelatedToAssets(watchlistAssetIds)) {
       watchlistArticles.add(article);
     } else {
       otherArticles.add(article);
     }
   }
 
-  // Sort watchlist articles by relevance (number of related stocks)
+  // Sort watchlist articles by relevance (number of related assets)
   watchlistArticles.sort((a, b) {
-    final aCount = a.getRelatedStockCount(watchlistStockIds);
-    final bCount = b.getRelatedStockCount(watchlistStockIds);
+    final aCount = a.getRelatedAssetCount(watchlistAssetIds);
+    final bCount = b.getRelatedAssetCount(watchlistAssetIds);
     return bCount.compareTo(aCount);
   });
 
@@ -256,7 +256,7 @@ Map<String, dynamic> _prepareNavigationData(NewsArticle article) {
     'content': article.content,
     'source': article.source,
     'publishedAt': article.publishedAt,
-    'relatedStockIds': article.relatedStockIds,
+    'relatedAssetIds': article.relatedAssetIds,
     'imageUrl': article.imageUrl,
     'category': article.category,
   };

@@ -54,9 +54,9 @@ class _NewsScreenState extends State<NewsScreen> {
 
   List<NewsArticle> _prioritizeArticles(List<NewsArticle> articles) {
     final appState = context.read<AppStateProvider>();
-    final watchlistStockIds = appState.watchlist.map((stock) => stock.id).toList();
+    final watchlistAssetIds = appState.watchlist.map((asset) => asset.id).toList();
     
-    if (watchlistStockIds.isEmpty) {
+    if (watchlistAssetIds.isEmpty) {
       return articles;
     }
 
@@ -65,17 +65,17 @@ class _NewsScreenState extends State<NewsScreen> {
     final otherArticles = <NewsArticle>[];
 
     for (final article in articles) {
-      if (article.isRelatedToStocks(watchlistStockIds)) {
+      if (article.isRelatedToAssets(watchlistAssetIds)) {
         watchlistArticles.add(article);
       } else {
         otherArticles.add(article);
       }
     }
 
-    // Sort watchlist articles by relevance (number of related stocks)
+    // Sort watchlist articles by relevance (number of related assets)
     watchlistArticles.sort((a, b) {
-      final aCount = a.getRelatedStockCount(watchlistStockIds);
-      final bCount = b.getRelatedStockCount(watchlistStockIds);
+      final aCount = a.getRelatedAssetCount(watchlistAssetIds);
+      final bCount = b.getRelatedAssetCount(watchlistAssetIds);
       return bCount.compareTo(aCount);
     });
 
@@ -267,8 +267,8 @@ class _NewsScreenState extends State<NewsScreen> {
 
   Widget _buildArticleCard(NewsArticle article) {
     final appState = context.watch<AppStateProvider>();
-    final watchlistStockIds = appState.watchlist.map((stock) => stock.id).toList();
-    final isWatchlistRelated = article.isRelatedToStocks(watchlistStockIds);
+    final watchlistAssetIds = appState.watchlist.map((asset) => asset.id).toList();
+    final isWatchlistRelated = article.isRelatedToAssets(watchlistAssetIds);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -354,7 +354,7 @@ class _NewsScreenState extends State<NewsScreen> {
                       color: Colors.grey.shade600,
                     ),
                   ),
-                  if (article.relatedStockIds.isNotEmpty) ...[
+                  if (article.relatedAssetIds.isNotEmpty) ...[
                     const SizedBox(width: 16),
                     Icon(
                       Icons.trending_up,
@@ -364,7 +364,7 @@ class _NewsScreenState extends State<NewsScreen> {
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
-                        article.relatedStockIds.join(', '),
+                        article.relatedAssetIds.join(', '),
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey.shade600,
@@ -463,13 +463,13 @@ class NewsArticleDetailScreen extends StatelessWidget {
                 ),
               ],
             ),
-            if (article.relatedStockIds.isNotEmpty) ...[
+            if (article.relatedAssetIds.isNotEmpty) ...[
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
-                children: article.relatedStockIds.map((stockId) {
+                children: article.relatedAssetIds.map((assetId) {
                   return Chip(
-                    label: Text(stockId),
+                    label: Text(assetId),
                     backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                   );
                 }).toList(),

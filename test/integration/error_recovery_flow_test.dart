@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:stockinfoapp/src/app.dart';
 import 'package:stockinfoapp/src/providers/app_state_provider.dart';
-import 'package:stockinfoapp/src/models/stock_item.dart';
+import 'package:stockinfoapp/src/models/asset_item.dart';
 import 'package:stockinfoapp/src/models/user_profile.dart';
 
 void main() {
@@ -45,7 +45,7 @@ void main() {
       expect(find.text('Financial News'), findsOneWidget);
     });
 
-    testWidgets('Invalid stock data handling', (WidgetTester tester) async {
+    testWidgets('Invalid asset data handling', (WidgetTester tester) async {
       await tester.pumpWidget(
         ChangeNotifierProvider<AppStateProvider>.value(
           value: appStateProvider,
@@ -55,21 +55,21 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Try to add invalid stock data
-      final invalidStock = StockItem(
+      // Try to add invalid asset data
+      final invalidAsset = AssetItem(
         id: '', // Invalid empty ID
         name: '',
         symbol: '',
         currentValue: -100.0, // Invalid negative value
         currency: 'INVALID',
         lastUpdated: DateTime.now(),
-        primaryIdentifierType: StockIdentifierType.isin,
+        primaryIdentifierType: AssetIdentifierType.isin,
         isInWatchlist: true,
       );
 
       // This should not crash the app
       try {
-        await appStateProvider.addToWatchlist(invalidStock);
+        await appStateProvider.addToWatchlist(invalidAsset);
         await tester.pumpAndSettle();
       } catch (e) {
         // Expected to handle gracefully
@@ -146,7 +146,7 @@ void main() {
       // Even if news fails to load, navigation should still work
       await tester.tap(find.byIcon(Icons.notifications));
       await tester.pumpAndSettle();
-      expect(find.text('Stock Alerts'), findsOneWidget);
+      expect(find.text('Asset Alerts'), findsOneWidget);
 
       await tester.tap(find.byIcon(Icons.home));
       await tester.pumpAndSettle();
@@ -198,20 +198,20 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Add many stocks to simulate memory usage
+      // Add many assets to simulate memory usage
       for (int i = 0; i < 100; i++) {
-        final stock = StockItem(
+        final asset = AssetItem(
           id: 'MEMORY_TEST_$i',
-          name: 'Memory Test Stock $i',
+          name: 'Memory Test Asset $i',
           symbol: 'MTS$i',
           currentValue: 10.0 + i,
           currency: 'EUR',
           lastUpdated: DateTime.now(),
-          primaryIdentifierType: StockIdentifierType.isin,
+          primaryIdentifierType: AssetIdentifierType.isin,
           isInWatchlist: true,
         );
 
-        await appStateProvider.addToWatchlist(stock);
+        await appStateProvider.addToWatchlist(asset);
       }
 
       await tester.pumpAndSettle();
@@ -229,7 +229,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('My Watchlist'), findsOneWidget);
 
-      // Clean up by removing all test stocks
+      // Clean up by removing all test assets
       for (int i = 0; i < 100; i++) {
         await appStateProvider.removeFromWatchlist('MEMORY_TEST_$i');
       }
@@ -251,19 +251,19 @@ void main() {
       final futures = <Future>[];
       
       for (int i = 0; i < 20; i++) {
-        final stock = StockItem(
+        final asset = AssetItem(
           id: 'CONCURRENT_$i',
-          name: 'Concurrent Test Stock $i',
+          name: 'Concurrent Test Asset $i',
           symbol: 'CTS$i',
           currentValue: 10.0 + i,
           currency: 'EUR',
           lastUpdated: DateTime.now(),
-          primaryIdentifierType: StockIdentifierType.isin,
+          primaryIdentifierType: AssetIdentifierType.isin,
           isInWatchlist: true,
         );
 
         // Add and remove operations concurrently
-        futures.add(appStateProvider.addToWatchlist(stock));
+        futures.add(appStateProvider.addToWatchlist(asset));
         if (i % 2 == 0) {
           futures.add(appStateProvider.removeFromWatchlist('CONCURRENT_${i ~/ 2}'));
         }

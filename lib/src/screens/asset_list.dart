@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import '../models/stock_item.dart';
-import '../widgets/stock_card.dart';
+import '../models/asset_item.dart';
+import '../widgets/asset_card.dart';
 
-class StockListView extends StatefulWidget {
-  const StockListView({super.key});
+class AssetList extends StatefulWidget {
+  const AssetList({super.key});
 
   static const routeName = '/';
 
   @override
-  State<StockListView> createState() => _StockListViewState();
+  State<AssetList> createState() => _AssetListState();
 }
 
-class _StockListViewState extends State<StockListView> {
-  final List<StockItem> _stocks = [
-    StockItem(
+class _AssetListState extends State<AssetList> {
+  final List<AssetItem> _assets = [
+    AssetItem(
       id: 'BASF11',
       isin: 'DE000BASF111',
       name: 'BASF SE',
@@ -22,23 +22,23 @@ class _StockListViewState extends State<StockListView> {
       previousClose: 44.80,
       currency: 'EUR',
       lastUpdated: DateTime.now(),
-      primaryIdentifierType: StockIdentifierType.isin,
+      primaryIdentifierType: AssetIdentifierType.isin,
       isInWatchlist: true,
       hints: [
-        StockHint(
+        AssetHint(
           type: 'buy_zone',
           description: 'Strong buy zone at 44.50',
           value: 44.50,
           timestamp: DateTime(2025, 9, 10),
         ),
-        StockHint(
+        AssetHint(
           type: 'trendline',
           description: 'Uptrend confirmed - breaking above 45.00 resistance',
           timestamp: DateTime(2025, 9, 11),
         ),
       ],
     ),
-    StockItem(
+    AssetItem(
       id: 'SAP',
       isin: 'DE0007164600',
       name: 'SAP SE',
@@ -47,10 +47,10 @@ class _StockListViewState extends State<StockListView> {
       previousClose: 180.20,
       currency: 'EUR',
       lastUpdated: DateTime.now(),
-      primaryIdentifierType: StockIdentifierType.isin,
+      primaryIdentifierType: AssetIdentifierType.isin,
       isInWatchlist: true,
       hints: [
-        StockHint(
+        AssetHint(
           type: 'support',
           description: 'Strong support level at 175.00',
           value: 175.00,
@@ -58,7 +58,7 @@ class _StockListViewState extends State<StockListView> {
         ),
       ],
     ),
-    StockItem(
+    AssetItem(
       id: 'MBG',
       isin: 'DE0007100000',
       name: 'Mercedes-Benz Group AG',
@@ -67,23 +67,23 @@ class _StockListViewState extends State<StockListView> {
       previousClose: 67.50,
       currency: 'EUR',
       lastUpdated: DateTime.now(),
-      primaryIdentifierType: StockIdentifierType.isin,
+      primaryIdentifierType: AssetIdentifierType.isin,
       isInWatchlist: true,
       hints: [
-        StockHint(
+        AssetHint(
           type: 'resistance',
           description: 'Key resistance level at 70.00',
           value: 70.00,
           timestamp: DateTime(2025, 9, 8),
         ),
-        StockHint(
+        AssetHint(
           type: 'trendline',
           description: 'Breaking above resistance - bullish momentum',
           timestamp: DateTime(2025, 9, 11),
         ),
       ],
     ),
-    StockItem(
+    AssetItem(
       id: 'MUV2',
       isin: 'DE0008430026',
       name: 'Munich Re',
@@ -92,10 +92,10 @@ class _StockListViewState extends State<StockListView> {
       previousClose: 410.25,
       currency: 'EUR',
       lastUpdated: DateTime.now(),
-      primaryIdentifierType: StockIdentifierType.isin,
+      primaryIdentifierType: AssetIdentifierType.isin,
       isInWatchlist: true,
     ),
-    StockItem(
+    AssetItem(
       id: 'ADS',
       isin: 'DE000A1EWWW0',
       name: 'Adidas AG',
@@ -104,10 +104,10 @@ class _StockListViewState extends State<StockListView> {
       previousClose: 218.75,
       currency: 'EUR',
       lastUpdated: DateTime.now(),
-      primaryIdentifierType: StockIdentifierType.isin,
+      primaryIdentifierType: AssetIdentifierType.isin,
       isInWatchlist: true,
       hints: [
-        StockHint(
+        AssetHint(
           type: 'buy_zone',
           description: 'Good entry point below 220.00',
           value: 220.00,
@@ -121,27 +121,27 @@ class _StockListViewState extends State<StockListView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Stock Portfolio'),
+        title: const Text('Asset Portfolio'),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: _addStock,
+            onPressed: _addAsset,
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: _refreshStocks,
+            onPressed: _refreshAssets,
           ),
         ],
       ),
-      body: _buildStockList(),
+      body: _buildAssetList(),
     );
   }
 
-  Widget _buildStockList() {
-    if (_stocks.isEmpty) {
+  Widget _buildAssetList() {
+    if (_assets.isEmpty) {
       return const Center(
         child: Text(
-          'No stocks added yet.\nTap the + button to add your first stock.',
+          'No assets added yet.\nTap the + button to add your first asset.',
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 16, color: Colors.grey),
         ),
@@ -149,37 +149,37 @@ class _StockListViewState extends State<StockListView> {
     }
 
     return ListView.builder(
-      itemCount: _stocks.length,
+      itemCount: _assets.length,
       itemBuilder: (context, index) {
-        final stock = _stocks[index];
-        return StockCard(
-          stock: stock,
-          onTap: () => _showStockDetails(stock),
+        final asset = _assets[index];
+        return AssetCard(
+          asset: asset,
+          onTap: () => _showAssetDetails(asset),
         );
       },
     );
   }
 
-  void _showStockDetails(StockItem stock) {
+  void _showAssetDetails(AssetItem asset) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text(stock.name),
+          title: Text(asset.name),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('ISIN: ${stock.isin ?? stock.id}'),
-              Text('Current: ${stock.currentValue} ${stock.currency}'),
-              if (stock.previousClose != null)
-                Text('Previous Close: ${stock.previousClose} ${stock.currency}'),
-              Text('Change: ${stock.calculatedDayChange.toStringAsFixed(2)} '
-                  '(${stock.calculatedDayChangePercent.toStringAsFixed(2)}%)'),
-              if (stock.hints.isNotEmpty) ...[
+              Text('ISIN: ${asset.isin ?? asset.id}'),
+              Text('Current: ${asset.currentValue} ${asset.currency}'),
+              if (asset.previousClose != null)
+                Text('Previous Close: ${asset.previousClose} ${asset.currency}'),
+              Text('Change: ${asset.calculatedDayChange.toStringAsFixed(2)} '
+                  '(${asset.calculatedDayChangePercent.toStringAsFixed(2)}%)'),
+              if (asset.hints.isNotEmpty) ...[
                 const SizedBox(height: 16),
                 const Text('Hints:', style: TextStyle(fontWeight: FontWeight.bold)),
-                ...stock.hints.map((hint) => Text('• ${hint.description}')),
+                ...asset.hints.map((hint) => Text('• ${hint.description}')),
               ],
             ],
           ),
@@ -194,17 +194,17 @@ class _StockListViewState extends State<StockListView> {
     );
   }
 
-  void _addStock() {
-    // Placeholder for adding new stocks
+  void _addAsset() {
+    // Placeholder for adding new assets
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Add stock functionality coming soon!')),
+      const SnackBar(content: Text('Add asset functionality coming soon!')),
     );
   }
 
-  void _refreshStocks() {
-    // Placeholder for refreshing stock data
+  void _refreshAssets() {
+    // Placeholder for refreshing asset data
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Refreshing stock data...')),
+      const SnackBar(content: Text('Refreshing asset data...')),
     );
   }
 }

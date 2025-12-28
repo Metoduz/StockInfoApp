@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/stock_alert.dart';
+import '../models/asset_alert.dart';
 import '../services/alert_service.dart';
 import '../services/storage_service.dart';
 
@@ -40,7 +40,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Stock Alerts'),
+        title: const Text('Asset Alerts'),
         automaticallyImplyLeading: false,
         actions: [
           if (_isInitialized) ...[
@@ -122,7 +122,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Create your first stock alert to get notified\nwhen prices reach your target levels',
+            'Create your first asset alert to get notified\nwhen prices reach your target levels',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 16,
@@ -140,7 +140,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
     );
   }
 
-  Widget _buildAlertCard(StockAlert alert) {
+  Widget _buildAlertCard(AssetAlert alert) {
     final status = alert.status;
     final statusColor = switch (status) {
       AlertStatus.active => Colors.green,
@@ -159,7 +159,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
           ),
         ),
         title: Text(
-          alert.stockName,
+          alert.assetName,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Column(
@@ -268,7 +268,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
     return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
 
-  Future<void> _handleAlertAction(StockAlert alert, String action) async {
+  Future<void> _handleAlertAction(AssetAlert alert, String action) async {
     try {
       switch (action) {
         case 'enable':
@@ -309,7 +309,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
     );
   }
 
-  void _showEditAlertDialog(StockAlert alert) {
+  void _showEditAlertDialog(AssetAlert alert) {
     showDialog(
       context: context,
       builder: (context) => _AlertDialog(
@@ -320,12 +320,12 @@ class _AlertsScreenState extends State<AlertsScreen> {
     );
   }
 
-  void _showDeleteConfirmation(StockAlert alert) {
+  void _showDeleteConfirmation(AssetAlert alert) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Alert'),
-        content: Text('Are you sure you want to delete the alert for ${alert.stockName}?'),
+        content: Text('Are you sure you want to delete the alert for ${alert.assetName}?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -357,7 +357,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
 
 class _AlertDialog extends StatefulWidget {
   final AlertService alertService;
-  final StockAlert? existingAlert;
+  final AssetAlert? existingAlert;
   final VoidCallback onAlertCreated;
 
   const _AlertDialog({
@@ -374,7 +374,7 @@ class _AlertDialogState extends State<_AlertDialog> {
   final _formKey = GlobalKey<FormState>();
   final _thresholdController = TextEditingController();
   
-  String? _selectedStockId;
+  String? _selectedAssetId;
   AlertType _selectedType = AlertType.priceAbove;
   bool _enablePushNotifications = true;
   bool _enableInAppNotifications = true;
@@ -384,7 +384,7 @@ class _AlertDialogState extends State<_AlertDialog> {
     super.initState();
     if (widget.existingAlert != null) {
       final alert = widget.existingAlert!;
-      _selectedStockId = alert.stockId;
+      _selectedAssetId = alert.assetId;
       _selectedType = alert.type;
       _thresholdController.text = alert.threshold.toString();
       _enablePushNotifications = alert.notifications.enablePushNotifications;
@@ -401,7 +401,7 @@ class _AlertDialogState extends State<_AlertDialog> {
   @override
   Widget build(BuildContext context) {
     final isEditing = widget.existingAlert != null;
-    final availableStocks = widget.alertService.getAllStockData();
+    final availableAssets = widget.alertService.getAllAssetData();
 
     return AlertDialog(
       title: Text(isEditing ? 'Edit Alert' : 'Create Alert'),
@@ -411,14 +411,14 @@ class _AlertDialogState extends State<_AlertDialog> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Stock selection
+              // Asset selection
               DropdownButtonFormField<String>(
-                value: _selectedStockId,
+                value: _selectedAssetId,
                 decoration: const InputDecoration(
-                  labelText: 'Stock',
+                  labelText: 'Asset',
                   border: OutlineInputBorder(),
                 ),
-                items: availableStocks.entries.map((entry) {
+                items: availableAssets.entries.map((entry) {
                   return DropdownMenuItem(
                     value: entry.key,
                     child: Text('${entry.value.name} (${entry.key})'),
@@ -426,12 +426,12 @@ class _AlertDialogState extends State<_AlertDialog> {
                 }).toList(),
                 onChanged: (value) {
                   setState(() {
-                    _selectedStockId = value;
+                    _selectedAssetId = value;
                   });
                 },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please select a stock';
+                    return 'Please select a asset';
                   }
                   return null;
                 },
@@ -561,11 +561,11 @@ class _AlertDialogState extends State<_AlertDialog> {
 
   Future<void> _saveAlert() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_selectedStockId == null) return;
+    if (_selectedAssetId == null) return;
 
     try {
       final threshold = double.parse(_thresholdController.text);
-      final stockData = widget.alertService.getAllStockData()[_selectedStockId!]!;
+      final assetData = widget.alertService.getAllAssetData()[_selectedAssetId!]!;
       
       final notifications = NotificationSettings(
         enablePushNotifications: _enablePushNotifications,
@@ -575,8 +575,8 @@ class _AlertDialogState extends State<_AlertDialog> {
       if (widget.existingAlert != null) {
         // Update existing alert
         final updatedAlert = widget.existingAlert!.copyWith(
-          stockId: _selectedStockId,
-          stockName: stockData.name,
+          assetId: _selectedAssetId,
+          assetName: assetData.name,
           type: _selectedType,
           threshold: threshold,
           notifications: notifications,
@@ -584,10 +584,10 @@ class _AlertDialogState extends State<_AlertDialog> {
         await widget.alertService.updateAlert(updatedAlert);
       } else {
         // Create new alert
-        final alert = StockAlert(
+        final alert = AssetAlert(
           id: AlertService.generateAlertId(),
-          stockId: _selectedStockId!,
-          stockName: stockData.name,
+          assetId: _selectedAssetId!,
+          assetName: assetData.name,
           type: _selectedType,
           threshold: threshold,
           createdAt: DateTime.now(),

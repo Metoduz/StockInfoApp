@@ -8,8 +8,8 @@ enum TransactionType {
 
 class Transaction {
   final String id;
-  final String stockId;
-  final String stockName;
+  final String assetId;
+  final String assetName;
   final TransactionType type;
   final double quantity;
   final double price;
@@ -21,8 +21,8 @@ class Transaction {
 
   const Transaction({
     required this.id,
-    required this.stockId,
-    required this.stockName,
+    required this.assetId,
+    required this.assetName,
     required this.type,
     required this.quantity,
     required this.price,
@@ -54,12 +54,12 @@ class Transaction {
 
   /// Check if this transaction matches the given filter criteria
   bool matchesFilter({
-    String? stockSymbol,
+    String? assetSymbol,
     DateTime? startDate,
     DateTime? endDate,
     TransactionType? transactionType,
   }) {
-    if (stockSymbol != null && !stockId.toLowerCase().contains(stockSymbol.toLowerCase())) {
+    if (assetSymbol != null && !assetId.toLowerCase().contains(assetSymbol.toLowerCase())) {
       return false;
     }
     if (startDate != null && date.isBefore(startDate)) {
@@ -76,8 +76,8 @@ class Transaction {
 
   Transaction copyWith({
     String? id,
-    String? stockId,
-    String? stockName,
+    String? assetId,
+    String? assetName,
     TransactionType? type,
     double? quantity,
     double? price,
@@ -89,8 +89,8 @@ class Transaction {
   }) {
     return Transaction(
       id: id ?? this.id,
-      stockId: stockId ?? this.stockId,
-      stockName: stockName ?? this.stockName,
+      assetId: assetId ?? this.assetId,
+      assetName: assetName ?? this.assetName,
       type: type ?? this.type,
       quantity: quantity ?? this.quantity,
       price: price ?? this.price,
@@ -105,8 +105,8 @@ class Transaction {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'stockId': stockId,
-      'stockName': stockName,
+      'assetId': assetId,
+      'assetName': assetName,
       'type': type.name,
       'quantity': quantity,
       'price': price,
@@ -121,8 +121,8 @@ class Transaction {
   factory Transaction.fromJson(Map<String, dynamic> json) {
     return Transaction(
       id: json['id'] as String,
-      stockId: json['stockId'] as String,
-      stockName: json['stockName'] as String,
+      assetId: json['assetId'] as String,
+      assetName: json['assetName'] as String,
       type: TransactionType.values.firstWhere(
         (e) => e.name == json['type'],
         orElse: () => TransactionType.buy,
@@ -146,7 +146,7 @@ class PerformanceMetrics {
   final double totalPercentageReturn;
   final double totalFees;
   final int totalTransactions;
-  final Map<String, double> stockPerformance;
+  final Map<String, double> assetPerformance;
 
   const PerformanceMetrics({
     required this.totalInvested,
@@ -155,7 +155,7 @@ class PerformanceMetrics {
     required this.totalPercentageReturn,
     required this.totalFees,
     required this.totalTransactions,
-    required this.stockPerformance,
+    required this.assetPerformance,
   });
 
   /// Calculate performance metrics from a list of transactions
@@ -166,9 +166,9 @@ class PerformanceMetrics {
     double totalInvested = 0.0;
     double totalValue = 0.0;
     double totalFees = 0.0;
-    Map<String, double> stockHoldings = {};
-    Map<String, double> stockCosts = {};
-    Map<String, double> stockPerformance = {};
+    Map<String, double> assetHoldings = {};
+    Map<String, double> assetCosts = {};
+    Map<String, double> assetPerformance = {};
 
     // Process all transactions
     for (final transaction in transactions) {
@@ -177,21 +177,21 @@ class PerformanceMetrics {
       switch (transaction.type) {
         case TransactionType.buy:
           totalInvested += transaction.totalValue;
-          stockHoldings[transaction.stockId] = 
-              (stockHoldings[transaction.stockId] ?? 0.0) + transaction.quantity;
-          stockCosts[transaction.stockId] = 
-              (stockCosts[transaction.stockId] ?? 0.0) + transaction.totalValue;
+          assetHoldings[transaction.assetId] = 
+              (assetHoldings[transaction.assetId] ?? 0.0) + transaction.quantity;
+          assetCosts[transaction.assetId] = 
+              (assetCosts[transaction.assetId] ?? 0.0) + transaction.totalValue;
           break;
         case TransactionType.sell:
-          stockHoldings[transaction.stockId] = 
-              (stockHoldings[transaction.stockId] ?? 0.0) - transaction.quantity;
+          assetHoldings[transaction.assetId] = 
+              (assetHoldings[transaction.assetId] ?? 0.0) - transaction.quantity;
           // For sells, we reduce the cost basis proportionally
-          final currentHolding = stockHoldings[transaction.stockId] ?? 0.0;
+          final currentHolding = assetHoldings[transaction.assetId] ?? 0.0;
           if (currentHolding >= 0) {
-            final costReduction = (stockCosts[transaction.stockId] ?? 0.0) * 
+            final costReduction = (assetCosts[transaction.assetId] ?? 0.0) * 
                 (transaction.quantity / (currentHolding + transaction.quantity));
-            stockCosts[transaction.stockId] = 
-                (stockCosts[transaction.stockId] ?? 0.0) - costReduction;
+            assetCosts[transaction.assetId] = 
+                (assetCosts[transaction.assetId] ?? 0.0) - costReduction;
           }
           break;
         case TransactionType.dividend:
@@ -206,17 +206,17 @@ class PerformanceMetrics {
     }
 
     // Calculate current value based on holdings and current prices
-    for (final entry in stockHoldings.entries) {
-      final stockId = entry.key;
+    for (final entry in assetHoldings.entries) {
+      final assetId = entry.key;
       final quantity = entry.value;
-      final currentPrice = currentPrices[stockId] ?? 0.0;
+      final currentPrice = currentPrices[assetId] ?? 0.0;
       final currentValue = quantity * currentPrice;
       totalValue += currentValue;
 
-      // Calculate individual stock performance
-      final costBasis = stockCosts[stockId] ?? 0.0;
+      // Calculate individual asset performance
+      final costBasis = assetCosts[assetId] ?? 0.0;
       if (costBasis > 0) {
-        stockPerformance[stockId] = ((currentValue - costBasis) / costBasis) * 100;
+        assetPerformance[assetId] = ((currentValue - costBasis) / costBasis) * 100;
       }
     }
 
@@ -232,7 +232,7 @@ class PerformanceMetrics {
       totalPercentageReturn: totalPercentageReturn,
       totalFees: totalFees,
       totalTransactions: transactions.length,
-      stockPerformance: stockPerformance,
+      assetPerformance: assetPerformance,
     );
   }
 }

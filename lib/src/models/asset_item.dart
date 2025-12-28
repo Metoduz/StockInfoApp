@@ -1,21 +1,21 @@
-class StockItem {
+class AssetItem {
   final String id; // Unique identifier (can be ISIN, WKN, ticker, or internal ID)
   final String? isin; // International Securities Identification Number
   final String? wkn; // Wertpapierkennnummer (German securities ID)
-  final String? ticker; // Stock ticker symbol
+  final String? ticker; // Asset ticker symbol
   final String name;
   final String symbol;
   final double currentValue;
   final double? previousClose;
   final String currency;
-  final List<StockHint> hints;
+  final List<AssetHint> hints;
   final DateTime lastUpdated;
   final bool isInWatchlist;
-  final StockIdentifierType primaryIdentifierType;
+  final AssetIdentifierType primaryIdentifierType;
   final double? dayChange;
   final double? dayChangePercent;
 
-  StockItem({
+  AssetItem({
     required this.id,
     this.isin,
     this.wkn,
@@ -50,24 +50,24 @@ class StockItem {
   }
 
   // New methods for watchlist management
-  StockItem addToWatchlist() {
+  AssetItem addToWatchlist() {
     return copyWith(isInWatchlist: true);
   }
 
-  StockItem removeFromWatchlist() {
+  AssetItem removeFromWatchlist() {
     return copyWith(isInWatchlist: false);
   }
 
   // Helper methods for identifier management
   String getPrimaryIdentifier() {
     switch (primaryIdentifierType) {
-      case StockIdentifierType.isin:
+      case AssetIdentifierType.isin:
         return isin ?? id;
-      case StockIdentifierType.wkn:
+      case AssetIdentifierType.wkn:
         return wkn ?? id;
-      case StockIdentifierType.ticker:
+      case AssetIdentifierType.ticker:
         return ticker ?? id;
-      case StockIdentifierType.internal:
+      case AssetIdentifierType.internal:
         return id;
     }
   }
@@ -81,7 +81,7 @@ class StockItem {
   }
 
   // Copy with method for immutability
-  StockItem copyWith({
+  AssetItem copyWith({
     String? id,
     String? isin,
     String? wkn,
@@ -91,14 +91,14 @@ class StockItem {
     double? currentValue,
     double? previousClose,
     String? currency,
-    List<StockHint>? hints,
+    List<AssetHint>? hints,
     DateTime? lastUpdated,
     bool? isInWatchlist,
-    StockIdentifierType? primaryIdentifierType,
+    AssetIdentifierType? primaryIdentifierType,
     double? dayChange,
     double? dayChangePercent,
   }) {
-    return StockItem(
+    return AssetItem(
       id: id ?? this.id,
       isin: isin ?? this.isin,
       wkn: wkn ?? this.wkn,
@@ -119,17 +119,17 @@ class StockItem {
 
   @override
   String toString() {
-    return 'StockItem{id: $id, name: $name, currentValue: $currentValue, currency: $currency, isInWatchlist: $isInWatchlist}';
+    return 'AssetItem{id: $id, name: $name, currentValue: $currentValue, currency: $currency, isInWatchlist: $isInWatchlist}';
   }
 }
 
-class StockHint {
+class AssetHint {
   final String type; // e.g., 'buy_zone', 'trendline', 'support', 'resistance'
   final String description;
   final double? value;
   final DateTime? timestamp;
 
-  StockHint({
+  AssetHint({
     required this.type,
     required this.description,
     this.value,
@@ -138,11 +138,11 @@ class StockHint {
 
   @override
   String toString() {
-    return 'StockHint{type: $type, description: $description, value: $value}';
+    return 'AssetHint{type: $type, description: $description, value: $value}';
   }
 }
 
-enum StockIdentifierType {
+enum AssetIdentifierType {
   isin,
   wkn,
   ticker,

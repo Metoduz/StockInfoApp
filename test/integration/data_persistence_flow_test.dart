@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:stockinfoapp/src/app.dart';
 import 'package:stockinfoapp/src/providers/app_state_provider.dart';
-import 'package:stockinfoapp/src/models/stock_item.dart';
+import 'package:stockinfoapp/src/models/asset_item.dart';
 import 'package:stockinfoapp/src/models/user_profile.dart';
 import 'package:stockinfoapp/src/models/app_settings.dart';
 
@@ -26,24 +26,24 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Add a stock to watchlist
-      final testStock = StockItem(
+      // Add a asset to watchlist
+      final testAsset = AssetItem(
         id: 'TEST123',
         name: 'Test Company',
         symbol: 'TEST',
         currentValue: 100.0,
         currency: 'EUR',
         lastUpdated: DateTime.now(),
-        primaryIdentifierType: StockIdentifierType.isin,
+        primaryIdentifierType: AssetIdentifierType.isin,
         isInWatchlist: true,
       );
 
-      await appStateProvider.addToWatchlist(testStock);
+      await appStateProvider.addToWatchlist(testAsset);
       await tester.pumpAndSettle();
 
-      // Verify stock was added
+      // Verify asset was added
       expect(appStateProvider.watchlist.length, greaterThan(0));
-      expect(appStateProvider.watchlist.any((stock) => stock.id == 'TEST123'), isTrue);
+      expect(appStateProvider.watchlist.any((asset) => asset.id == 'TEST123'), isTrue);
 
       // Update user profile
       final testProfile = UserProfile(
@@ -80,7 +80,7 @@ void main() {
       await newAppStateProvider.initializeAppData();
 
       // Verify data persisted across restart
-      expect(newAppStateProvider.watchlist.any((stock) => stock.id == 'TEST123'), isTrue);
+      expect(newAppStateProvider.watchlist.any((asset) => asset.id == 'TEST123'), isTrue);
       expect(newAppStateProvider.userProfile?.name, equals('Test User'));
       expect(newAppStateProvider.userProfile?.email, equals('test@example.com'));
       expect(newAppStateProvider.appSettings?.currency, equals('USD'));
@@ -155,22 +155,22 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Add a stock to watchlist from main tab
-      final testStock = StockItem(
+      // Add a asset to watchlist from main tab
+      final testAsset = AssetItem(
         id: 'CONSISTENCY_TEST',
-        name: 'Consistency Test Stock',
+        name: 'Consistency Test Asset',
         symbol: 'CTS',
         currentValue: 50.0,
         currency: 'EUR',
         lastUpdated: DateTime.now(),
-        primaryIdentifierType: StockIdentifierType.isin,
+        primaryIdentifierType: AssetIdentifierType.isin,
         isInWatchlist: true,
       );
 
-      await appStateProvider.addToWatchlist(testStock);
+      await appStateProvider.addToWatchlist(testAsset);
       await tester.pumpAndSettle();
 
-      // Verify stock count in main tab
+      // Verify asset count in main tab
       final initialWatchlistCount = appStateProvider.watchlist.length;
       expect(initialWatchlistCount, greaterThan(0));
 
@@ -188,15 +188,15 @@ void main() {
 
       // Verify watchlist data is still consistent
       expect(appStateProvider.watchlist.length, equals(initialWatchlistCount));
-      expect(appStateProvider.watchlist.any((stock) => stock.id == 'CONSISTENCY_TEST'), isTrue);
+      expect(appStateProvider.watchlist.any((asset) => asset.id == 'CONSISTENCY_TEST'), isTrue);
 
-      // Remove the stock
+      // Remove the asset
       await appStateProvider.removeFromWatchlist('CONSISTENCY_TEST');
       await tester.pumpAndSettle();
 
       // Verify removal is reflected
       expect(appStateProvider.watchlist.length, equals(initialWatchlistCount - 1));
-      expect(appStateProvider.watchlist.any((stock) => stock.id == 'CONSISTENCY_TEST'), isFalse);
+      expect(appStateProvider.watchlist.any((asset) => asset.id == 'CONSISTENCY_TEST'), isFalse);
     });
 
     testWidgets('Storage error handling gracefully', (WidgetTester tester) async {
@@ -213,20 +213,20 @@ void main() {
       // This is more of a behavioral test since we can't easily mock storage failures
       // in widget tests, but we can verify the app doesn't crash
 
-      // Try to add multiple stocks rapidly
+      // Try to add multiple assets rapidly
       for (int i = 0; i < 5; i++) {
-        final stock = StockItem(
+        final asset = AssetItem(
           id: 'RAPID_$i',
-          name: 'Rapid Test Stock $i',
+          name: 'Rapid Test Asset $i',
           symbol: 'RTS$i',
           currentValue: 10.0 + i,
           currency: 'EUR',
           lastUpdated: DateTime.now(),
-          primaryIdentifierType: StockIdentifierType.isin,
+          primaryIdentifierType: AssetIdentifierType.isin,
           isInWatchlist: true,
         );
 
-        await appStateProvider.addToWatchlist(stock);
+        await appStateProvider.addToWatchlist(asset);
         // Don't wait for settle to simulate rapid operations
       }
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/active_trade.dart';
-import '../models/enhanced_asset_item.dart';
+import '../models/asset_item.dart';
 import '../strategies/trading_strategy_base.dart';
 import '../services/storage_service.dart';
 import '../screens/trade_detail_screen.dart';
@@ -9,7 +9,7 @@ import 'trade_close_dialog.dart';
 /// Widget that displays an individual active trade item
 class ActiveTradeItemWidget extends StatelessWidget {
   final ActiveTradeItem trade;
-  final EnhancedAssetItem asset;
+  final AssetItem asset;
   final double currentPrice;
   final String currency;
   final VoidCallback? onTap;

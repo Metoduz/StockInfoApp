@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import '../models/asset_alert.dart';
 import '../models/asset_item.dart';
-import '../models/enhanced_asset_item.dart';
 import '../models/active_trade.dart';
 import '../strategies/trading_strategy_base.dart';
 import 'storage_service.dart';
@@ -18,7 +17,7 @@ class AlertService extends ChangeNotifier {
   final Map<String, AssetItem> _mockAssetData = {};
   
   // Enhanced asset data for strategy monitoring
-  final Map<String, EnhancedAssetItem> _enhancedAssetData = {};
+  final Map<String, AssetItem> _enhancedAssetData = {};
 
   AlertService(this._storageService);
 
@@ -266,7 +265,7 @@ class AlertService extends ChangeNotifier {
   }
 
   /// Trigger a strategy alert
-  Future<void> _triggerStrategyAlert(EnhancedAssetItem asset, TradingStrategyItem strategy) async {
+  Future<void> _triggerStrategyAlert(AssetItem asset, TradingStrategyItem strategy) async {
     // Mark strategy as triggered
     final updatedStrategy = strategy.markTriggered();
     final strategyIndex = asset.strategies.indexWhere((s) => s.id == strategy.id);
@@ -285,13 +284,13 @@ class AlertService extends ChangeNotifier {
   }
 
   /// Trigger a stop loss alert
-  Future<void> _triggerStopLossAlert(EnhancedAssetItem asset, ActiveTradeItem trade) async {
+  Future<void> _triggerStopLossAlert(AssetItem asset, ActiveTradeItem trade) async {
     // Send notification
     await _sendStopLossNotification(asset, trade);
   }
 
   /// Send notification for triggered strategy alert
-  Future<void> _sendStrategyNotification(EnhancedAssetItem asset, TradingStrategyItem strategy) async {
+  Future<void> _sendStrategyNotification(AssetItem asset, TradingStrategyItem strategy) async {
     final strategyName = strategy.strategy.type.displayName;
     final direction = strategy.direction.displayName;
     
@@ -307,7 +306,7 @@ class AlertService extends ChangeNotifier {
   }
 
   /// Send notification for triggered stop loss alert
-  Future<void> _sendStopLossNotification(EnhancedAssetItem asset, ActiveTradeItem trade) async {
+  Future<void> _sendStopLossNotification(AssetItem asset, ActiveTradeItem trade) async {
     final direction = trade.direction.displayName;
     final stopLossType = trade.stopLoss?.type.displayName ?? 'Unknown';
     
@@ -418,7 +417,7 @@ class AlertService extends ChangeNotifier {
   }
 
   /// Register enhanced asset data for strategy monitoring
-  void registerEnhancedAsset(EnhancedAssetItem asset) {
+  void registerEnhancedAsset(AssetItem asset) {
     _enhancedAssetData[asset.id] = asset;
     
     // Also update the basic asset data
@@ -428,7 +427,7 @@ class AlertService extends ChangeNotifier {
   }
 
   /// Update enhanced asset data
-  void updateEnhancedAsset(EnhancedAssetItem asset) {
+  void updateEnhancedAsset(AssetItem asset) {
     _enhancedAssetData[asset.id] = asset;
     _mockAssetData[asset.id] = asset;
     notifyListeners();
@@ -442,12 +441,12 @@ class AlertService extends ChangeNotifier {
   }
 
   /// Get enhanced asset data
-  EnhancedAssetItem? getEnhancedAsset(String assetId) {
+  AssetItem? getEnhancedAsset(String assetId) {
     return _enhancedAssetData[assetId];
   }
 
   /// Get all enhanced asset data
-  Map<String, EnhancedAssetItem> getAllEnhancedAssets() {
+  Map<String, AssetItem> getAllEnhancedAssets() {
     return Map.unmodifiable(_enhancedAssetData);
   }
 
@@ -601,14 +600,14 @@ class AlertService extends ChangeNotifier {
   }
 
   /// Get all assets with active strategy alerts
-  List<EnhancedAssetItem> getAssetsWithStrategyAlerts() {
+  List<AssetItem> getAssetsWithStrategyAlerts() {
     return _enhancedAssetData.values
         .where((asset) => asset.strategies.any((s) => s.alertEnabled))
         .toList();
   }
 
   /// Get all assets with active stop loss alerts
-  List<EnhancedAssetItem> getAssetsWithStopLossAlerts() {
+  List<AssetItem> getAssetsWithStopLossAlerts() {
     return _enhancedAssetData.values
         .where((asset) => asset.activeTrades.any((t) => t.stopLoss?.alertEnabled == true))
         .toList();

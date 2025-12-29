@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import '../models/enhanced_asset_item.dart';
+import '../models/asset_item.dart';
 import 'tag_management_dialog.dart';
 
 /// Widget that displays tags in a horizontal flow layout with wrapping
 /// Supports maximum 2 rows with overflow indicator
 class TagsSection extends StatelessWidget {
-  final EnhancedAssetItem asset;
-  final Function(EnhancedAssetItem)? onAssetUpdated;
+  final AssetItem asset;
+  final Function(AssetItem)? onAssetUpdated;
   final VoidCallback? onTagTap;
   final int maxRows;
   final int itemsPerRow;

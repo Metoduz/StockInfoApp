@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../models/enhanced_asset_item.dart';
+import '../models/asset_item.dart';
 import '../services/tag_search_service.dart';
 
 /// Widget for searching assets by name, tags, and asset type
 class AssetSearchWidget extends StatefulWidget {
-  final List<EnhancedAssetItem> assets;
-  final Function(List<EnhancedAssetItem>) onSearchResults;
+  final List<AssetItem> assets;
+  final Function(List<AssetItem>) onSearchResults;
   final String? initialQuery;
 
   const AssetSearchWidget({
@@ -259,7 +259,7 @@ class _AssetSearchWidgetState extends State<AssetSearchWidget> {
   void _performSearch() {
     final query = _searchController.text.trim();
     
-    List<EnhancedAssetItem> results = TagSearchService.filterAssets(
+    List<AssetItem> results = TagSearchService.filterAssets(
       widget.assets,
       tags: _selectedTags.isNotEmpty ? _selectedTags : null,
       assetTypes: _selectedAssetTypes.isNotEmpty ? _selectedAssetTypes : null,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/enhanced_asset_item.dart';
+import '../models/asset_item.dart';
 import '../strategies/trading_strategy_base.dart';
 import '../models/active_trade.dart';
 import 'asset_information_section.dart';
@@ -13,9 +13,9 @@ import 'active_trades_section.dart';
 /// The AssetInformation section is always visible, while other sections
 /// can be expanded/collapsed based on user interaction and content availability.
 class EnhancedAssetCard extends StatefulWidget {
-  final EnhancedAssetItem asset;
+  final AssetItem asset;
   final VoidCallback? onTap;
-  final Function(EnhancedAssetItem)? onAssetUpdated;
+  final Function(AssetItem)? onAssetUpdated;
   final VoidCallback? onAddStrategy;
   final VoidCallback? onAddTrade;
   final Function(TradingStrategyItem)? onStrategyTap;

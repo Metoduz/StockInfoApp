@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/active_trade.dart';
-import '../models/enhanced_asset_item.dart';
+import '../models/asset_item.dart';
 import '../strategies/trading_strategy_base.dart';
 import '../services/storage_service.dart';
 
 /// Screen for viewing and editing detailed information about an active trade
 class TradeDetailScreen extends StatefulWidget {
   final ActiveTradeItem trade;
-  final EnhancedAssetItem asset;
+  final AssetItem asset;
 
   const TradeDetailScreen({
     super.key,

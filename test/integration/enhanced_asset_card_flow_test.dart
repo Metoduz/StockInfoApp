@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stockinfoapp/src/models/asset_item.dart';
-import 'package:stockinfoapp/src/models/enhanced_asset_item.dart';
 import 'package:stockinfoapp/src/models/active_trade.dart';
 import 'package:stockinfoapp/src/strategies/trading_strategy_base.dart';
-import 'package:stockinfoapp/src/utils/asset_conversion.dart';
 import 'package:stockinfoapp/src/widgets/enhanced_asset_card.dart';
 import 'package:stockinfoapp/src/screens/trade_detail_screen.dart';
 
@@ -23,9 +21,10 @@ void main() {
         lastUpdated: DateTime.now(),
         primaryIdentifierType: AssetIdentifierType.isin,
         isInWatchlist: true,
+        assetType: AssetType.stock,
       );
 
-      final enhancedAsset = AssetConversion.toEnhanced(testAsset);
+      final enhancedAsset = testAsset;
 
       // Build the enhanced asset card
       await tester.pumpWidget(
@@ -63,9 +62,10 @@ void main() {
         lastUpdated: DateTime.now(),
         primaryIdentifierType: AssetIdentifierType.isin,
         isInWatchlist: true,
+        assetType: AssetType.stock,
       );
 
-      final enhancedAsset = AssetConversion.toEnhanced(testAsset);
+      final enhancedAsset = testAsset;
 
       bool addStrategyCalled = false;
       bool addTradeCalled = false;
@@ -134,9 +134,10 @@ void main() {
         lastUpdated: DateTime.now(),
         primaryIdentifierType: AssetIdentifierType.isin,
         isInWatchlist: true,
+        assetType: AssetType.stock,
       );
 
-      final enhancedAsset = AssetConversion.toEnhanced(testAsset);
+      final enhancedAsset = testAsset;
 
       // Add a test active trade
       final activeTrade = ActiveTradeItem(
@@ -192,9 +193,10 @@ void main() {
         lastUpdated: DateTime.now(),
         primaryIdentifierType: AssetIdentifierType.isin,
         isInWatchlist: true,
+        assetType: AssetType.stock,
       );
 
-      final enhancedAsset = AssetConversion.toEnhanced(testAsset);
+      final enhancedAsset = testAsset;
 
       // Test mobile layout
       await tester.binding.setSurfaceSize(const Size(400, 800));
@@ -240,9 +242,10 @@ void main() {
         lastUpdated: DateTime.now(),
         primaryIdentifierType: AssetIdentifierType.ticker,
         isInWatchlist: true,
+        assetType: AssetType.stock,
       );
 
-      final enhancedAsset = AssetConversion.toEnhanced(testAsset);
+      final enhancedAsset = testAsset;
 
       // Build the enhanced asset card
       await tester.pumpWidget(
@@ -279,9 +282,10 @@ void main() {
         lastUpdated: DateTime.now(),
         primaryIdentifierType: AssetIdentifierType.isin,
         isInWatchlist: true,
+        assetType: AssetType.stock,
       );
 
-      final enhancedAsset = AssetConversion.toEnhanced(testAsset);
+      final enhancedAsset = testAsset;
 
       // Build the enhanced asset card
       await tester.pumpWidget(
@@ -316,9 +320,10 @@ void main() {
         lastUpdated: DateTime.now(),
         primaryIdentifierType: AssetIdentifierType.isin,
         isInWatchlist: true,
+        assetType: AssetType.stock,
       );
 
-      final enhancedAsset = AssetConversion.toEnhanced(testAsset);
+      final enhancedAsset = testAsset;
 
       // Build the enhanced asset card
       await tester.pumpWidget(

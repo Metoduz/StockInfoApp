@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/asset_item.dart';
 import '../widgets/enhanced_asset_card.dart';
-import '../utils/asset_conversion.dart';
 
 class AssetList extends StatefulWidget {
   const AssetList({super.key});
@@ -25,6 +24,7 @@ class _AssetListState extends State<AssetList> {
       lastUpdated: DateTime.now(),
       primaryIdentifierType: AssetIdentifierType.isin,
       isInWatchlist: true,
+      assetType: AssetType.stock,
       hints: [
         AssetHint(
           type: 'buy_zone',
@@ -50,6 +50,7 @@ class _AssetListState extends State<AssetList> {
       lastUpdated: DateTime.now(),
       primaryIdentifierType: AssetIdentifierType.isin,
       isInWatchlist: true,
+      assetType: AssetType.stock,
       hints: [
         AssetHint(
           type: 'support',
@@ -70,6 +71,7 @@ class _AssetListState extends State<AssetList> {
       lastUpdated: DateTime.now(),
       primaryIdentifierType: AssetIdentifierType.isin,
       isInWatchlist: true,
+      assetType: AssetType.stock,
       hints: [
         AssetHint(
           type: 'resistance',
@@ -95,6 +97,7 @@ class _AssetListState extends State<AssetList> {
       lastUpdated: DateTime.now(),
       primaryIdentifierType: AssetIdentifierType.isin,
       isInWatchlist: true,
+      assetType: AssetType.stock,
     ),
     AssetItem(
       id: 'ADS',
@@ -107,6 +110,7 @@ class _AssetListState extends State<AssetList> {
       lastUpdated: DateTime.now(),
       primaryIdentifierType: AssetIdentifierType.isin,
       isInWatchlist: true,
+      assetType: AssetType.stock,
       hints: [
         AssetHint(
           type: 'buy_zone',
@@ -153,16 +157,13 @@ class _AssetListState extends State<AssetList> {
       itemCount: _assets.length,
       itemBuilder: (context, index) {
         final asset = _assets[index];
-        final enhancedAsset = AssetConversion.toEnhanced(asset);
         return EnhancedAssetCard(
-          asset: enhancedAsset,
+          asset: asset,
           onTap: () => _showAssetDetails(asset),
           // Enhanced features callbacks can be added here when needed
           onAssetUpdated: (updatedAsset) {
-            // Convert back to regular AssetItem and update the list
-            final regularAsset = AssetConversion.toRegular(updatedAsset);
             setState(() {
-              _assets[index] = regularAsset;
+              _assets[index] = updatedAsset;
             });
           },
         );

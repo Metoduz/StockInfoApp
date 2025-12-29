@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../models/enhanced_asset_item.dart';
+import '../models/asset_item.dart';
 
 /// Widget that displays asset identifiers (Name, ISIN, WKN, Short Name) on the left side
 /// Implements responsive text layout for different screen sizes
 class AssetIdentifiers extends StatelessWidget {
-  final EnhancedAssetItem asset;
+  final AssetItem asset;
 
   const AssetIdentifiers({
     super.key,

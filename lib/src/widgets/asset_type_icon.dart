@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/enhanced_asset_item.dart';
+import '../models/asset_item.dart';
 
 /// Widget that displays an icon representing the asset type
 /// Supports different asset types: Stocks, Resources, CFD, Crypto, and Other

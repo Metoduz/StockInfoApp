@@ -1,14 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
-import '../../../lib/src/models/enhanced_asset_item.dart';
-import '../../../lib/src/models/asset_item.dart';
-import '../../../lib/src/strategies/trading_strategy_base.dart';
-import '../../../lib/src/strategies/trendline_strategy.dart';
-import '../../../lib/src/models/active_trade.dart';
+import 'package:stockinfoapp/src/models/asset_item.dart';
+import 'package:stockinfoapp/src/strategies/trading_strategy_base.dart';
+import 'package:stockinfoapp/src/strategies/trendline_strategy.dart';
+import 'package:stockinfoapp/src/models/active_trade.dart';
 
 void main() {
-  group('EnhancedAssetItem', () {
-    test('should create enhanced asset item with basic properties', () {
-      final asset = EnhancedAssetItem(
+  group('AssetItem', () {
+    test('should create asset item with basic properties', () {
+      final asset = AssetItem(
         id: 'test-id',
         name: 'Test Asset',
         symbol: 'TEST',
@@ -27,7 +26,7 @@ void main() {
     });
 
     test('should filter tags correctly with overflow', () {
-      final asset = EnhancedAssetItem(
+      final asset = AssetItem(
         id: 'test-id',
         name: 'Test Asset',
         symbol: 'TEST',
@@ -53,7 +52,7 @@ void main() {
         openDate: DateTime.now(),
       );
 
-      final asset = EnhancedAssetItem(
+      final asset = AssetItem(
         id: 'test-id',
         name: 'Test Asset',
         symbol: 'TEST',
@@ -70,7 +69,7 @@ void main() {
     });
 
     test('should add and remove tags correctly', () {
-      final asset = EnhancedAssetItem(
+      final asset = AssetItem(
         id: 'test-id',
         name: 'Test Asset',
         symbol: 'TEST',
@@ -89,7 +88,7 @@ void main() {
     });
 
     test('should serialize and deserialize correctly', () {
-      final originalAsset = EnhancedAssetItem(
+      final originalAsset = AssetItem(
         id: 'test-id',
         name: 'Test Asset',
         symbol: 'TEST',
@@ -102,7 +101,7 @@ void main() {
       );
 
       final json = originalAsset.toJson();
-      final deserializedAsset = EnhancedAssetItem.fromJson(json);
+      final deserializedAsset = AssetItem.fromJson(json);
 
       expect(deserializedAsset.id, equals(originalAsset.id));
       expect(deserializedAsset.name, equals(originalAsset.name));

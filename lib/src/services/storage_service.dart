@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/asset_item.dart';
-import '../models/enhanced_asset_item.dart';
 import '../models/user_profile.dart';
 import '../models/app_settings.dart';
 import '../models/transaction.dart';
@@ -23,8 +22,8 @@ class StorageService {
   static const String _legalDocumentNotificationsKey = 'legal_document_notifications';
   static const String _lastLegalNotificationTimeKey = 'last_legal_notification_time';
 
-  // Enhanced Watchlist methods - support for EnhancedAssetItem
-  Future<void> saveEnhancedWatchlist(List<EnhancedAssetItem> assets) async {
+  // Enhanced Watchlist methods - support for AssetItem
+  Future<void> saveEnhancedWatchlist(List<AssetItem> assets) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final assetJson = assets.map((asset) => asset.toJson()).toList();
@@ -34,7 +33,7 @@ class StorageService {
     }
   }
 
-  Future<List<EnhancedAssetItem>> loadEnhancedWatchlist() async {
+  Future<List<AssetItem>> loadEnhancedWatchlist() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final watchlistString = prefs.getString(_watchlistKey);
@@ -44,12 +43,12 @@ class StorageService {
       }
 
       final List<dynamic> assetJson = jsonDecode(watchlistString);
-      return assetJson.map((json) => EnhancedAssetItem.fromJson(json)).toList();
+      return assetJson.map((json) => AssetItem.fromJson(json)).toList();
     } catch (e) {
       // Try to load as regular assets and convert to enhanced
       try {
         final regularAssets = await loadWatchlist();
-        final enhancedAssets = regularAssets.map((asset) => EnhancedAssetItem(
+        final enhancedAssets = regularAssets.map((asset) => AssetItem(
           id: asset.id,
           isin: asset.isin,
           wkn: asset.wkn,

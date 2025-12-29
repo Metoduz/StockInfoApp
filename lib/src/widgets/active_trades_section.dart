@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/active_trade.dart';
-import '../models/enhanced_asset_item.dart';
+import '../models/asset_item.dart';
 import '../strategies/trading_strategy_base.dart';
 import '../services/storage_service.dart';
 import '../screens/trade_detail_screen.dart';
@@ -9,7 +9,7 @@ import 'trade_close_dialog.dart';
 /// Widget that displays the active trades section in a simple list format
 /// without expand/collapse functionality (controlled by parent)
 class ActiveTradesSection extends StatelessWidget {
-  final EnhancedAssetItem asset;
+  final AssetItem asset;
   final List<ActiveTradeItem> activeTrades;
   final VoidCallback? onAddTrade;
   final Function(ActiveTradeItem)? onTradeEdit;

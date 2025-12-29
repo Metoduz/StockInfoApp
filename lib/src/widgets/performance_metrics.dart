@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import '../models/enhanced_asset_item.dart';
+import '../models/asset_item.dart';
 
 /// Widget that displays performance metrics with three key values:
 /// - Daily performance percentage
 /// - Open trades total performance for this asset
 /// - All trades (open + closed) total performance
 class PerformanceMetrics extends StatelessWidget {
-  final EnhancedAssetItem asset;
+  final AssetItem asset;
 
   const PerformanceMetrics({
     super.key,

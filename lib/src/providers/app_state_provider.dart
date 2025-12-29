@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import '../models/asset_item.dart';
-import '../models/enhanced_asset_item.dart';
 import '../models/user_profile.dart';
 import '../models/app_settings.dart';
 import '../services/storage_service.dart';
@@ -10,8 +9,8 @@ import '../services/storage_service.dart';
 class AppStateProvider extends ChangeNotifier {
   final StorageService _storageService = StorageService();
   
-  // Watchlist state - now using EnhancedAssetItem
-  List<EnhancedAssetItem> _watchlist = [];
+  // Watchlist state - now using AssetItem
+  List<AssetItem> _watchlist = [];
   
   // User profile state
   UserProfile? _userProfile;
@@ -28,7 +27,7 @@ class AppStateProvider extends ChangeNotifier {
   bool _isLoadingSettings = false;
   
   // Getters
-  List<EnhancedAssetItem> get watchlist => List.unmodifiable(_watchlist);
+  List<AssetItem> get watchlist => List.unmodifiable(_watchlist);
   UserProfile? get userProfile => _userProfile;
   AppSettings? get appSettings => _appSettings;
   int get currentTabIndex => _currentTabIndex;
@@ -71,33 +70,15 @@ class AppStateProvider extends ChangeNotifier {
   }
   
   Future<void> addToWatchlist(AssetItem asset) async {
-    // Convert AssetItem to EnhancedAssetItem for backward compatibility
-    final enhancedAsset = EnhancedAssetItem(
-      id: asset.id,
-      isin: asset.isin,
-      wkn: asset.wkn,
-      ticker: asset.ticker,
-      name: asset.name,
-      symbol: asset.symbol,
-      currentValue: asset.currentValue,
-      previousClose: asset.previousClose,
-      currency: asset.currency,
-      hints: asset.hints,
-      lastUpdated: asset.lastUpdated,
-      isInWatchlist: asset.isInWatchlist,
-      primaryIdentifierType: asset.primaryIdentifierType,
-      dayChange: asset.dayChange,
-      dayChangePercent: asset.dayChangePercent,
-    );
-    
-    if (!_watchlist.any((item) => item.id == enhancedAsset.id)) {
-      _watchlist.add(enhancedAsset);
+    // Add AssetItem directly to watchlist
+    if (!_watchlist.any((item) => item.id == asset.id)) {
+      _watchlist.add(asset);
       notifyListeners();
       await _saveWatchlist();
     }
   }
   
-  Future<void> addEnhancedToWatchlist(EnhancedAssetItem asset) async {
+  Future<void> addEnhancedToWatchlist(AssetItem asset) async {
     if (!_watchlist.any((item) => item.id == asset.id)) {
       _watchlist.add(asset);
       notifyListeners();
@@ -115,51 +96,24 @@ class AppStateProvider extends ChangeNotifier {
     if (oldIndex < newIndex) {
       newIndex -= 1;
     }
-    final EnhancedAssetItem item = _watchlist.removeAt(oldIndex);
+    final AssetItem item = _watchlist.removeAt(oldIndex);
     _watchlist.insert(newIndex, item);
     notifyListeners();
     await _saveWatchlist();
   }
   
+
   Future<void> updateAsset(AssetItem updatedAsset) async {
-    // Convert AssetItem to EnhancedAssetItem for backward compatibility
-    final enhancedAsset = EnhancedAssetItem(
-      id: updatedAsset.id,
-      isin: updatedAsset.isin,
-      wkn: updatedAsset.wkn,
-      ticker: updatedAsset.ticker,
-      name: updatedAsset.name,
-      symbol: updatedAsset.symbol,
-      currentValue: updatedAsset.currentValue,
-      previousClose: updatedAsset.previousClose,
-      currency: updatedAsset.currency,
-      hints: updatedAsset.hints,
-      lastUpdated: updatedAsset.lastUpdated,
-      isInWatchlist: updatedAsset.isInWatchlist,
-      primaryIdentifierType: updatedAsset.primaryIdentifierType,
-      dayChange: updatedAsset.dayChange,
-      dayChangePercent: updatedAsset.dayChangePercent,
-    );
-    
-    final index = _watchlist.indexWhere((item) => item.id == enhancedAsset.id);
+    // Update AssetItem directly in watchlist
+    final index = _watchlist.indexWhere((item) => item.id == updatedAsset.id);
     if (index != -1) {
-      // Preserve existing enhanced features (tags, strategies, trades)
-      final existingAsset = _watchlist[index];
-      final updatedEnhancedAsset = enhancedAsset.copyWith(
-        tags: existingAsset.tags,
-        strategies: existingAsset.strategies,
-        activeTrades: existingAsset.activeTrades,
-        closedTrades: existingAsset.closedTrades,
-        assetType: existingAsset.assetType,
-      );
-      
-      _watchlist[index] = updatedEnhancedAsset;
+      _watchlist[index] = updatedAsset;
       notifyListeners();
       await _saveWatchlist();
     }
   }
   
-  Future<void> updateEnhancedAsset(EnhancedAssetItem updatedAsset) async {
+  Future<void> updateEnhancedAsset(AssetItem updatedAsset) async {
     final index = _watchlist.indexWhere((item) => item.id == updatedAsset.id);
     if (index != -1) {
       _watchlist[index] = updatedAsset;
@@ -239,7 +193,7 @@ class AppStateProvider extends ChangeNotifier {
   // Initialize with default data when storage fails
   void _initializeDefaultWatchlist() {
     _watchlist = [
-      EnhancedAssetItem(
+      AssetItem(
         id: 'BASF11',
         isin: 'DE000BASF111',
         name: 'BASF SE',
@@ -250,8 +204,9 @@ class AppStateProvider extends ChangeNotifier {
         lastUpdated: DateTime.now(),
         isInWatchlist: true,
         primaryIdentifierType: AssetIdentifierType.isin,
+        assetType: AssetType.stock,
       ),
-      EnhancedAssetItem(
+      AssetItem(
         id: 'SAP',
         isin: 'DE0007164600',
         name: 'SAP SE',
@@ -262,6 +217,7 @@ class AppStateProvider extends ChangeNotifier {
         lastUpdated: DateTime.now(),
         isInWatchlist: true,
         primaryIdentifierType: AssetIdentifierType.isin,
+        assetType: AssetType.stock,
       ),
     ];
   }

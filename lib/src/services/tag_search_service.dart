@@ -1,11 +1,11 @@
-import '../models/enhanced_asset_item.dart';
+import '../models/asset_item.dart';
 
 /// Service for searching assets by tags
 class TagSearchService {
   /// Search assets by tag names
   /// Returns assets that contain any of the specified tags (OR operation)
-  static List<EnhancedAssetItem> searchByTags(
-    List<EnhancedAssetItem> assets,
+  static List<AssetItem> searchByTags(
+    List<AssetItem> assets,
     List<String> searchTags, {
     bool caseSensitive = false,
   }) {
@@ -27,8 +27,8 @@ class TagSearchService {
   }
 
   /// Search assets by a single tag
-  static List<EnhancedAssetItem> searchByTag(
-    List<EnhancedAssetItem> assets,
+  static List<AssetItem> searchByTag(
+    List<AssetItem> assets,
     String searchTag, {
     bool caseSensitive = false,
   }) {
@@ -36,7 +36,7 @@ class TagSearchService {
   }
 
   /// Get all unique tags from a list of assets
-  static List<String> getAllTags(List<EnhancedAssetItem> assets) {
+  static List<String> getAllTags(List<AssetItem> assets) {
     final allTags = <String>{};
     for (final asset in assets) {
       allTags.addAll(asset.tags);
@@ -46,7 +46,7 @@ class TagSearchService {
 
   /// Get tag suggestions based on partial input
   static List<String> getTagSuggestions(
-    List<EnhancedAssetItem> assets,
+    List<AssetItem> assets,
     String partialTag, {
     bool caseSensitive = false,
     int maxSuggestions = 10,
@@ -65,8 +65,8 @@ class TagSearchService {
   }
 
   /// Filter assets by multiple criteria including tags
-  static List<EnhancedAssetItem> filterAssets(
-    List<EnhancedAssetItem> assets, {
+  static List<AssetItem> filterAssets(
+    List<AssetItem> assets, {
     List<String>? tags,
     List<AssetType>? assetTypes,
     String? nameFilter,
@@ -98,12 +98,12 @@ class TagSearchService {
   }
 
   /// Get assets that have no tags
-  static List<EnhancedAssetItem> getUntaggedAssets(List<EnhancedAssetItem> assets) {
+  static List<AssetItem> getUntaggedAssets(List<AssetItem> assets) {
     return assets.where((asset) => asset.tags.isEmpty).toList();
   }
 
   /// Get tag usage statistics
-  static Map<String, int> getTagUsageStats(List<EnhancedAssetItem> assets) {
+  static Map<String, int> getTagUsageStats(List<AssetItem> assets) {
     final tagCounts = <String, int>{};
     
     for (final asset in assets) {
@@ -117,7 +117,7 @@ class TagSearchService {
 
   /// Get most popular tags
   static List<String> getMostPopularTags(
-    List<EnhancedAssetItem> assets, {
+    List<AssetItem> assets, {
     int limit = 10,
   }) {
     final tagStats = getTagUsageStats(assets);

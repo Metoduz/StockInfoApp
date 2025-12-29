@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/enhanced_asset_item.dart';
+import '../models/asset_item.dart';
 import 'asset_type_icon.dart';
 import 'asset_identifiers.dart';
 import 'performance_metrics.dart';
@@ -7,7 +7,7 @@ import 'performance_metrics.dart';
 /// The AssetInformation section that is always visible in the enhanced asset card
 /// Contains asset type icon, identifiers, and performance metrics
 class AssetInformationSection extends StatelessWidget {
-  final EnhancedAssetItem asset;
+  final AssetItem asset;
 
   const AssetInformationSection({
     super.key,

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:stockinfoapp/src/models/enhanced_asset_item.dart';
+import 'package:stockinfoapp/src/models/asset_item.dart';
 import 'package:stockinfoapp/src/models/asset_item.dart';
 import 'package:stockinfoapp/src/models/strategy_template.dart';
 import 'package:stockinfoapp/src/models/active_trade.dart';
@@ -269,7 +269,7 @@ void main() {
           expect(json['assetType'], equals(assetType.name),
               reason: 'Asset type should be correctly serialized for $assetType');
           
-          final deserializedAsset = EnhancedAssetItem.fromJson(json);
+          final deserializedAsset = AssetItem.fromJson(json);
           expect(deserializedAsset.assetType, equals(assetType),
               reason: 'Asset type should be correctly deserialized for $assetType');
           
@@ -1005,7 +1005,7 @@ void main() {
             reason: 'Zero price trade should have zero total value');
         
         // Property 8: Performance calculations should be consistent across serialization
-        final serializedAsset = EnhancedAssetItem.fromJson(assetWithAllTrades.toJson());
+        final serializedAsset = AssetItem.fromJson(assetWithAllTrades.toJson());
         
         expect(serializedAsset.getDailyPerformancePercent(), closeTo(assetWithAllTrades.getDailyPerformancePercent(), 0.001),
             reason: 'Daily performance should be consistent after serialization');
@@ -1795,7 +1795,7 @@ void main() {
         // Property 7: Asset information should handle edge cases gracefully
         
         // Test with minimal asset data
-        final minimalAsset = EnhancedAssetItem(
+        final minimalAsset = AssetItem(
           id: 'minimal_$iteration',
           name: 'Minimal Asset',
           symbol: 'MIN',
@@ -1886,7 +1886,7 @@ TradingStrategy _generateStrategyOfType(Random random, StrategyType type, String
   }
 }
 
-EnhancedAssetItem _generateRandomEnhancedAsset(Random random, AssetType assetType) {
+AssetItem _generateRandomEnhancedAsset(Random random, AssetType assetType) {
   final companies = [
     {'name': 'BASF SE', 'symbol': 'BAS', 'isin': 'DE000BASF111', 'wkn': 'BASF11'},
     {'name': 'SAP SE', 'symbol': 'SAP', 'isin': 'DE0007164600', 'wkn': '716460'},
@@ -1907,7 +1907,7 @@ EnhancedAssetItem _generateRandomEnhancedAsset(Random random, AssetType assetTyp
   final tagCount = random.nextInt(6); // 0-5 tags
   final tags = List.generate(tagCount, (index) => tagOptions[random.nextInt(tagOptions.length)]).toSet().toList();
   
-  return EnhancedAssetItem(
+  return AssetItem(
     id: '${company['symbol']}_${random.nextInt(10000)}',
     isin: company['isin'],
     wkn: company['wkn'],

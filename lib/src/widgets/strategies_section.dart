@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/enhanced_asset_item.dart';
+import '../models/asset_item.dart';
 import '../strategies/trading_strategy_base.dart' as strategy_base;
 import 'trading_strategy_item.dart' as widgets;
 import 'composite_strategy_item.dart';
@@ -7,8 +7,8 @@ import 'composite_strategy_item.dart';
 /// Widget that displays trading strategies in a simple list format
 /// without expand/collapse functionality (controlled by parent)
 class StrategiesSection extends StatelessWidget {
-  final EnhancedAssetItem asset;
-  final Function(EnhancedAssetItem)? onAssetUpdated;
+  final AssetItem asset;
+  final Function(AssetItem)? onAssetUpdated;
   final VoidCallback? onAddStrategy;
   final Function(strategy_base.TradingStrategyItem)? onStrategyTap;
   final Function(String)? onStrategyDelete;

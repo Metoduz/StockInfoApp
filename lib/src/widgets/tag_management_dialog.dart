@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../models/enhanced_asset_item.dart';
+import '../models/asset_item.dart';
 
 /// Dialog for managing tags on an asset
 /// Allows adding and removing tags during asset creation or editing
 class TagManagementDialog extends StatefulWidget {
-  final EnhancedAssetItem asset;
-  final Function(EnhancedAssetItem) onAssetUpdated;
+  final AssetItem asset;
+  final Function(AssetItem) onAssetUpdated;
 
   const TagManagementDialog({
     super.key,
@@ -18,7 +18,7 @@ class TagManagementDialog extends StatefulWidget {
 }
 
 class _TagManagementDialogState extends State<TagManagementDialog> {
-  late EnhancedAssetItem _currentAsset;
+  late AssetItem _currentAsset;
   final TextEditingController _tagController = TextEditingController();
   final FocusNode _tagFocusNode = FocusNode();
 
@@ -213,8 +213,8 @@ class _TagManagementDialogState extends State<TagManagementDialog> {
 class TagManagement {
   static Future<void> showTagManagementDialog({
     required BuildContext context,
-    required EnhancedAssetItem asset,
-    required Function(EnhancedAssetItem) onAssetUpdated,
+    required AssetItem asset,
+    required Function(AssetItem) onAssetUpdated,
   }) {
     return showDialog<void>(
       context: context,

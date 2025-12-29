@@ -6,6 +6,7 @@ import 'screens/user_profile_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/trading_history_screen.dart';
 import 'screens/legal_info_screen.dart';
+import 'screens/template_management_screen.dart';
 import 'providers/app_state_provider.dart';
 
 /// The main application widget.
@@ -48,6 +49,7 @@ class _MyAppState extends State<MyApp> {
             '/profile': (context) => const UserProfileScreen(),
             '/settings': (context) => const SettingsScreen(),
             '/trading-history': (context) => const TradingHistoryScreen(),
+            '/templates': (context) => const TemplateManagementScreen(),
             '/legal': (context) => const LegalInfoScreen(),
           },
           // Handle unknown routes

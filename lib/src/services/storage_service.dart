@@ -2,10 +2,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/asset_item.dart';
+import '../models/enhanced_asset_item.dart';
 import '../models/user_profile.dart';
 import '../models/app_settings.dart';
 import '../models/transaction.dart';
 import '../models/asset_alert.dart';
+import '../models/active_trade.dart';
+import '../models/closed_trade.dart';
 
 class StorageService {
   static const String _watchlistKey = 'watchlist';
@@ -13,9 +16,65 @@ class StorageService {
   static const String _appSettingsKey = 'app_settings';
   static const String _transactionsKey = 'transactions';
   static const String _alertsKey = 'alerts';
+  static const String _strategyTemplatesKey = 'strategy_templates';
+  static const String _activeTradesKey = 'active_trades';
+  static const String _closedTradesKey = 'closed_trades';
   static const String _legalDocumentVersionsKey = 'legal_document_versions';
   static const String _legalDocumentNotificationsKey = 'legal_document_notifications';
   static const String _lastLegalNotificationTimeKey = 'last_legal_notification_time';
+
+  // Enhanced Watchlist methods - support for EnhancedAssetItem
+  Future<void> saveEnhancedWatchlist(List<EnhancedAssetItem> assets) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final assetJson = assets.map((asset) => asset.toJson()).toList();
+      await prefs.setString(_watchlistKey, jsonEncode(assetJson));
+    } catch (e) {
+      throw Exception('Failed to save enhanced watchlist: $e');
+    }
+  }
+
+  Future<List<EnhancedAssetItem>> loadEnhancedWatchlist() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final watchlistString = prefs.getString(_watchlistKey);
+      
+      if (watchlistString == null || watchlistString.isEmpty) {
+        return [];
+      }
+
+      final List<dynamic> assetJson = jsonDecode(watchlistString);
+      return assetJson.map((json) => EnhancedAssetItem.fromJson(json)).toList();
+    } catch (e) {
+      // Try to load as regular assets and convert to enhanced
+      try {
+        final regularAssets = await loadWatchlist();
+        final enhancedAssets = regularAssets.map((asset) => EnhancedAssetItem(
+          id: asset.id,
+          isin: asset.isin,
+          wkn: asset.wkn,
+          ticker: asset.ticker,
+          name: asset.name,
+          symbol: asset.symbol,
+          currentValue: asset.currentValue,
+          previousClose: asset.previousClose,
+          currency: asset.currency,
+          hints: asset.hints,
+          lastUpdated: asset.lastUpdated,
+          isInWatchlist: asset.isInWatchlist,
+          primaryIdentifierType: asset.primaryIdentifierType,
+          dayChange: asset.dayChange,
+          dayChangePercent: asset.dayChangePercent,
+        )).toList();
+        
+        // Save as enhanced format for future loads
+        await saveEnhancedWatchlist(enhancedAssets);
+        return enhancedAssets;
+      } catch (e2) {
+        throw Exception('Failed to load enhanced watchlist: $e');
+      }
+    }
+  }
 
   Future<void> saveWatchlist(List<AssetItem> assets) async {
     try {
@@ -124,6 +183,217 @@ class StorageService {
     }
   }
 
+  // Active Trades methods
+  Future<void> saveActiveTrades(List<ActiveTradeItem> activeTrades) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final activeTradesJson = activeTrades.map((trade) => trade.toJson()).toList();
+      await prefs.setString(_activeTradesKey, jsonEncode(activeTradesJson));
+    } catch (e) {
+      throw Exception('Failed to save active trades: $e');
+    }
+  }
+
+  Future<List<ActiveTradeItem>> loadActiveTrades() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final activeTradesString = prefs.getString(_activeTradesKey);
+      
+      if (activeTradesString == null || activeTradesString.isEmpty) {
+        return [];
+      }
+
+      final List<dynamic> activeTradesJson = jsonDecode(activeTradesString);
+      return activeTradesJson.map((json) => ActiveTradeItem.fromJson(json)).toList();
+    } catch (e) {
+      throw Exception('Failed to load active trades: $e');
+    }
+  }
+
+  // Closed Trades methods
+  Future<void> saveClosedTrades(List<ClosedTradeItem> closedTrades) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final closedTradesJson = closedTrades.map((trade) => trade.toJson()).toList();
+      await prefs.setString(_closedTradesKey, jsonEncode(closedTradesJson));
+    } catch (e) {
+      throw Exception('Failed to save closed trades: $e');
+    }
+  }
+
+  Future<List<ClosedTradeItem>> loadClosedTrades() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final closedTradesString = prefs.getString(_closedTradesKey);
+      
+      if (closedTradesString == null || closedTradesString.isEmpty) {
+        return [];
+      }
+
+      final List<dynamic> closedTradesJson = jsonDecode(closedTradesString);
+      return closedTradesJson.map((json) => ClosedTradeItem.fromJson(json)).toList();
+    } catch (e) {
+      throw Exception('Failed to load closed trades: $e');
+    }
+  }
+
+  // Trade Management methods
+  Future<void> closeActiveTrade(String tradeId, double sellPrice, DateTime closeDate) async {
+    try {
+      // Load current active trades
+      final activeTrades = await loadActiveTrades();
+      final closedTrades = await loadClosedTrades();
+      
+      // Find the trade to close
+      final tradeIndex = activeTrades.indexWhere((trade) => trade.id == tradeId);
+      if (tradeIndex == -1) {
+        throw Exception('Active trade with ID $tradeId not found');
+      }
+      
+      final activeTrade = activeTrades[tradeIndex];
+      
+      // Create closed trade from active trade
+      final closedTrade = ClosedTradeItem.fromActiveTrade(activeTrade, sellPrice, closeDate);
+      
+      // Remove from active trades and add to closed trades
+      activeTrades.removeAt(tradeIndex);
+      closedTrades.add(closedTrade);
+      
+      // Save both lists
+      await saveActiveTrades(activeTrades);
+      await saveClosedTrades(closedTrades);
+      
+      // Create transaction record for the closed trade
+      final transactions = await loadTransactions();
+      final sellTransaction = Transaction(
+        id: '${tradeId}_sell',
+        assetId: activeTrade.assetId,
+        assetName: activeTrade.assetId, // This should be asset name, but we only have ID
+        type: TransactionType.sell,
+        quantity: activeTrade.quantity,
+        price: sellPrice,
+        totalValue: activeTrade.quantity * sellPrice,
+        date: closeDate,
+        notes: 'Trade closed: ${activeTrade.notice ?? ''}',
+        fees: activeTrade.fees,
+      );
+      
+      transactions.add(sellTransaction);
+      await saveTransactions(transactions);
+      
+    } catch (e) {
+      throw Exception('Failed to close active trade: $e');
+    }
+  }
+
+  Future<void> addActiveTrade(ActiveTradeItem trade) async {
+    try {
+      final activeTrades = await loadActiveTrades();
+      activeTrades.add(trade);
+      await saveActiveTrades(activeTrades);
+      
+      // Create transaction record for the new trade
+      final transactions = await loadTransactions();
+      final buyTransaction = Transaction(
+        id: '${trade.id}_buy',
+        assetId: trade.assetId,
+        assetName: trade.assetId, // This should be asset name, but we only have ID
+        type: TransactionType.buy,
+        quantity: trade.quantity,
+        price: trade.buyPrice,
+        totalValue: trade.getTotalValue(),
+        date: trade.openDate,
+        notes: 'Trade opened: ${trade.notice ?? ''}',
+        fees: trade.fees,
+      );
+      
+      transactions.add(buyTransaction);
+      await saveTransactions(transactions);
+      
+    } catch (e) {
+      throw Exception('Failed to add active trade: $e');
+    }
+  }
+
+  Future<void> updateActiveTrade(ActiveTradeItem updatedTrade) async {
+    try {
+      final activeTrades = await loadActiveTrades();
+      final tradeIndex = activeTrades.indexWhere((trade) => trade.id == updatedTrade.id);
+      
+      if (tradeIndex == -1) {
+        throw Exception('Active trade with ID ${updatedTrade.id} not found');
+      }
+      
+      activeTrades[tradeIndex] = updatedTrade;
+      await saveActiveTrades(activeTrades);
+      
+    } catch (e) {
+      throw Exception('Failed to update active trade: $e');
+    }
+  }
+
+  Future<void> deleteActiveTrade(String tradeId) async {
+    try {
+      final activeTrades = await loadActiveTrades();
+      activeTrades.removeWhere((trade) => trade.id == tradeId);
+      await saveActiveTrades(activeTrades);
+      
+    } catch (e) {
+      throw Exception('Failed to delete active trade: $e');
+    }
+  }
+
+  // Performance metrics calculation
+  Future<Map<String, dynamic>> calculatePerformanceMetrics(String? assetId) async {
+    try {
+      final activeTrades = await loadActiveTrades();
+      final closedTrades = await loadClosedTrades();
+      
+      // Filter by asset if specified
+      final filteredActiveTrades = assetId != null 
+          ? activeTrades.where((trade) => trade.assetId == assetId).toList()
+          : activeTrades;
+      final filteredClosedTrades = assetId != null 
+          ? closedTrades.where((trade) => trade.assetId == assetId).toList()
+          : closedTrades;
+      
+      // Calculate metrics
+      double totalInvested = 0.0;
+      double totalCurrentValue = 0.0;
+      double totalRealizedPnL = 0.0;
+      
+      // Calculate from closed trades
+      for (final trade in filteredClosedTrades) {
+        totalInvested += trade.buyValue;
+        totalRealizedPnL += trade.profitLoss;
+      }
+      
+      // Calculate from active trades (would need current prices for accurate calculation)
+      for (final trade in filteredActiveTrades) {
+        totalInvested += trade.getTotalValue();
+        // Note: For accurate current value, we'd need current market prices
+        // This is a placeholder calculation
+        totalCurrentValue += trade.getTotalValue();
+      }
+      
+      final totalPnL = totalRealizedPnL; // + unrealized PnL from active trades
+      final totalPnLPercentage = totalInvested > 0 ? (totalPnL / totalInvested) * 100 : 0.0;
+      
+      return {
+        'totalInvested': totalInvested,
+        'totalCurrentValue': totalCurrentValue,
+        'totalRealizedPnL': totalRealizedPnL,
+        'totalPnL': totalPnL,
+        'totalPnLPercentage': totalPnLPercentage,
+        'activeTradesCount': filteredActiveTrades.length,
+        'closedTradesCount': filteredClosedTrades.length,
+        'totalTradesCount': filteredActiveTrades.length + filteredClosedTrades.length,
+      };
+    } catch (e) {
+      throw Exception('Failed to calculate performance metrics: $e');
+    }
+  }
+
   // Asset Alerts methods
   Future<void> saveAlerts(List<AssetAlert> alerts) async {
     try {
@@ -151,6 +421,32 @@ class StorageService {
     }
   }
 
+  // Strategy Templates methods
+  Future<void> saveStrategyTemplates(List<Map<String, dynamic>> templates) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_strategyTemplatesKey, jsonEncode(templates));
+    } catch (e) {
+      throw Exception('Failed to save strategy templates: $e');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> loadStrategyTemplates() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final templatesString = prefs.getString(_strategyTemplatesKey);
+      
+      if (templatesString == null || templatesString.isEmpty) {
+        return [];
+      }
+
+      final List<dynamic> templatesJson = jsonDecode(templatesString);
+      return templatesJson.cast<Map<String, dynamic>>();
+    } catch (e) {
+      throw Exception('Failed to load strategy templates: $e');
+    }
+  }
+
   // Generic method to clear all data (for testing or reset purposes)
   Future<void> clearAllData() async {
     try {
@@ -160,6 +456,9 @@ class StorageService {
       await prefs.remove(_appSettingsKey);
       await prefs.remove(_transactionsKey);
       await prefs.remove(_alertsKey);
+      await prefs.remove(_strategyTemplatesKey);
+      await prefs.remove(_activeTradesKey);
+      await prefs.remove(_closedTradesKey);
       await prefs.remove(_legalDocumentVersionsKey);
       await prefs.remove(_legalDocumentNotificationsKey);
       await prefs.remove(_lastLegalNotificationTimeKey);
@@ -403,6 +702,24 @@ class StorageService {
         exportData['transactionsError'] = e.toString();
       }
       
+      // Export active trades
+      try {
+        final activeTrades = await loadActiveTrades();
+        exportData['activeTrades'] = activeTrades.map((trade) => trade.toJson()).toList();
+      } catch (e) {
+        exportData['activeTrades'] = [];
+        exportData['activeTradesError'] = e.toString();
+      }
+      
+      // Export closed trades
+      try {
+        final closedTrades = await loadClosedTrades();
+        exportData['closedTrades'] = closedTrades.map((trade) => trade.toJson()).toList();
+      } catch (e) {
+        exportData['closedTrades'] = [];
+        exportData['closedTradesError'] = e.toString();
+      }
+      
       // Export alerts (with privacy considerations)
       try {
         final alerts = await loadAlerts();
@@ -417,6 +734,15 @@ class StorageService {
       } catch (e) {
         exportData['alerts'] = [];
         exportData['alertsError'] = e.toString();
+      }
+      
+      // Export strategy templates
+      try {
+        final templates = await loadStrategyTemplates();
+        exportData['strategyTemplates'] = templates;
+      } catch (e) {
+        exportData['strategyTemplates'] = [];
+        exportData['strategyTemplatesError'] = e.toString();
       }
       
       // Export legal document versions (for user reference)
@@ -506,6 +832,30 @@ class StorageService {
         }
       }
       
+      // Import active trades
+      if (importData.containsKey('activeTrades') && importData['activeTrades'] is List) {
+        try {
+          final activeTradesData = importData['activeTrades'] as List<dynamic>;
+          final activeTrades = activeTradesData.map((json) => ActiveTradeItem.fromJson(json)).toList();
+          await saveActiveTrades(activeTrades);
+        } catch (e) {
+          hasErrors = true;
+          errors.add('Failed to import active trades: $e');
+        }
+      }
+      
+      // Import closed trades
+      if (importData.containsKey('closedTrades') && importData['closedTrades'] is List) {
+        try {
+          final closedTradesData = importData['closedTrades'] as List<dynamic>;
+          final closedTrades = closedTradesData.map((json) => ClosedTradeItem.fromJson(json)).toList();
+          await saveClosedTrades(closedTrades);
+        } catch (e) {
+          hasErrors = true;
+          errors.add('Failed to import closed trades: $e');
+        }
+      }
+      
       // Import alerts
       if (importData.containsKey('alerts') && importData['alerts'] is List) {
         try {
@@ -515,6 +865,18 @@ class StorageService {
         } catch (e) {
           hasErrors = true;
           errors.add('Failed to import alerts: $e');
+        }
+      }
+      
+      // Import strategy templates
+      if (importData.containsKey('strategyTemplates') && importData['strategyTemplates'] is List) {
+        try {
+          final templatesData = importData['strategyTemplates'] as List<dynamic>;
+          final templates = templatesData.cast<Map<String, dynamic>>();
+          await saveStrategyTemplates(templates);
+        } catch (e) {
+          hasErrors = true;
+          errors.add('Failed to import strategy templates: $e');
         }
       }
       
@@ -556,7 +918,7 @@ class StorageService {
     }
     
     // Check that at least one data section exists
-    final dataSections = ['watchlist', 'userProfile', 'appSettings', 'transactions', 'alerts'];
+    final dataSections = ['watchlist', 'userProfile', 'appSettings', 'transactions', 'alerts', 'strategyTemplates', 'activeTrades', 'closedTrades'];
     return dataSections.any((section) => data.containsKey(section));
   }
 

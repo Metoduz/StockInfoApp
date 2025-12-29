@@ -28,9 +28,10 @@ This specification defines the enhanced AssetCard component for the Stock Info A
 3. THE AssetInformation section SHALL display Name, ISIN, WKN, and short name on the left side
 4. THE AssetInformation section SHALL display an asset type symbol in the upper left corner
 5. THE AssetInformation section SHALL support asset types: Stocks, Resources, CFD, Crypto, and other types
-6. THE AssetInformation section SHALL display a daily graph on the right side showing past week/month data
-7. THE AssetInformation section SHALL display increase/decrease percentage below the graph
-8. THE graph time window SHALL be configurable in settings (week/month)
+6. THE AssetInformation section SHALL display performance metrics on the right side
+7. THE performance metrics SHALL include daily performance percentage
+8. THE performance metrics SHALL include total performance of all open trades for this asset
+9. THE performance metrics SHALL include total performance of all trades (open and closed) for this asset
 
 ### Requirement 2: Tag Management System
 
@@ -54,14 +55,14 @@ This specification defines the enhanced AssetCard component for the Stock Info A
 
 1. THE Strategies section SHALL contain an expandable list activated by a button
 2. THE Strategies list SHALL start with an "Add Strategy" button
-3. THE system SHALL support two strategy types: TradingStrategy and CompositeStrategy
+3. THE system SHALL support two strategy types: TradingStrategy and CompositeStrategy as parent
 4. WHEN a strategy has alerts enabled, THE system SHALL display a red alarm clock symbol
 5. WHEN a strategy has alerts disabled, THE system SHALL display a gray alarm clock symbol
 6. THE user SHALL be able to toggle alerts by clicking the alarm clock symbol
 7. THE strategy item SHALL display whether it's a long or short trade
 8. WHEN a strategy item is clicked, THE system SHALL open an edit page
 9. THE system SHALL support strategy types including: Trendline, Elliott Waves, Buy Area
-10. THE CompositeStrategy SHALL allow combination of multiple TradingStrategies with AND/OR operators
+10. THE CompositeStrategy SHALL allow combination of multiple TradingStrategies or CompositeStrategies with AND/OR operators
 
 ### Requirement 4: Composite Strategy Templates
 
@@ -87,12 +88,14 @@ This specification defines the enhanced AssetCard component for the Stock Info A
 5. THE trade item SHALL display current winnings/losses in percentage and total amount
 6. THE trade item SHALL support stop loss configuration with fixed value option
 7. THE trade item SHALL support trailing stop loss with value or percentage
-8. THE trade item SHALL include a notice section with symbol indicator when filled
-9. THE notice text SHALL NOT be visible in the card view
-10. THE trade item SHALL include delete and close buttons on the right side
-11. WHEN delete is clicked, THE system SHALL show a confirmation dialog
-12. WHEN close is clicked, THE user SHALL be able to enter the sell value
-13. THE closed trade information SHALL be saved as a transaction for performance metrics
+8. THE trade item SHALL support alerts for the stop loss like in the strategies with enabling/disabling feature
+9. THE trade item SHALL include a notice section with symbol indicator when filled
+10. THE notice text SHALL NOT be visible in the card view
+11. THE trade item SHALL include delete and close buttons on the right side
+12. WHEN delete is clicked, THE system SHALL show a confirmation dialog
+13. WHEN close is clicked, THE user SHALL be able to enter the sell value
+14. THE closed trade information SHALL be saved as a transaction for performance metrics
+15. EACH new trade item SHALL be included in the transaction view for performance metrics
 
 ### Requirement 6: Trade Detail Management
 
@@ -108,14 +111,17 @@ This specification defines the enhanced AssetCard component for the Stock Info A
 
 ### Requirement 7: Alert System Integration
 
-**User Story:** As an investor, I want to receive alerts when my trading strategy goals are reached, so that I can take timely action on my investments.
+**User Story:** As an investor, I want to receive alerts when my trading strategy goals or stop losses are reached, so that I can take timely action on my investments.
 
 #### Acceptance Criteria
 
 1. WHEN a strategy goal is reached, THE system SHALL send an alert notification
-2. THE alert system SHALL work for both TradingStrategy and CompositeStrategy types
-3. THE user SHALL be able to enable/disable alerts per strategy
-4. THE alert status SHALL be visually indicated by the alarm clock symbol color
+2. WHEN a stop loss is reached, THE system SHALL send an alert notification
+3. THE alert system SHALL work for both TradingStrategy and CompositeStrategy types
+4. THE user SHALL be able to enable/disable alerts per strategy
+5. THE alert status SHALL be visually indicated by the alarm clock symbol color
+6. THE alert system SHALL work for stop losses in active trades
+7. THE user SHALL be able to enable/disable alerts per active trade stop loss
 
 ### Requirement 8: Strategy File Organization
 
@@ -127,14 +133,16 @@ This specification defines the enhanced AssetCard component for the Stock Info A
 2. THE strategies folder SHALL contain individual strategy implementations
 3. THE strategy implementations SHALL include: Trendline, Elliott Waves, Buy Area
 4. THE strategy system SHALL be extensible for future strategy types
+5. THE strategy SHALL be based on the parent TradingStrategy
 
 ### Requirement 9: Transaction History Integration
 
-**User Story:** As an investor, I want my closed trades to be automatically recorded for performance analysis, so that I can track my overall trading success.
+**User Story:** As an investor, I want my opened and closed trades to be automatically recorded for performance analysis, so that I can track my overall trading success.
 
 #### Acceptance Criteria
 
-1. WHEN a trade is closed, THE system SHALL save buy and sell information
-2. THE transaction data SHALL be stored for performance metrics calculation
-3. THE closed transactions SHALL include all relevant trade details
-4. THE transaction history SHALL support overall performance analytics
+1. WHEN a trade is opened, THE system SHALL save the call information
+2. WHEN a trade is closed, THE system SHALL save buy and sell information and set the trade as closed
+3. THE transaction data SHALL be stored for performance metrics calculation
+4. THE closed transactions SHALL include all relevant trade details
+5. THE transaction history SHALL support overall performance analytics

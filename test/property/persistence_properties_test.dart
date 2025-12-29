@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stockinfoapp/src/services/storage_service.dart';
 import 'package:stockinfoapp/src/models/asset_item.dart';
 import 'package:stockinfoapp/src/models/user_profile.dart';
 import 'package:stockinfoapp/src/models/app_settings.dart';
 import 'package:stockinfoapp/src/models/transaction.dart';
 import 'package:stockinfoapp/src/models/asset_alert.dart';
+import '../test_helpers.dart';
 import 'dart:math';
 
 void main() {
@@ -16,14 +18,20 @@ void main() {
     late StorageService storageService;
     late Random random;
 
-    setUp(() {
+    setUp(() async {
+      // Set up SharedPreferences mock
+      await setupSharedPreferences();
       storageService = StorageService();
       random = Random();
     });
 
     tearDown(() async {
       // Clean up after each test
-      await storageService.clearAllData();
+      try {
+        await storageService.clearAllData();
+      } catch (e) {
+        // Ignore cleanup errors in tests
+      }
     });
 
     test('Property 19: Data Persistence Consistency - For any user data change (watchlist, profile, settings, trading history), the change should be automatically saved to local storage',

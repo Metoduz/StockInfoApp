@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/asset_item.dart';
-import '../widgets/asset_card.dart';
+import '../models/enhanced_asset_item.dart';
+import '../models/active_trade.dart';
+import '../strategies/trading_strategy_base.dart' as strategy_base;
+import '../widgets/enhanced_asset_card.dart';
 import '../widgets/asset_search_dialog.dart';
+import '../screens/trade_detail_screen.dart';
 import '../providers/app_state_provider.dart';
 
 class WatchlistScreen extends StatefulWidget {
@@ -204,7 +208,7 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
     );
   }
 
-  Widget _buildWatchlistContent(AppStateProvider appState, List<AssetItem> watchlist) {
+  Widget _buildWatchlistContent(AppStateProvider appState, List<EnhancedAssetItem> watchlist) {
     if (watchlist.isEmpty) {
       return _buildEmptyWatchlist(appState);
     }
@@ -232,9 +236,23 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
           onDismissed: (direction) {
             _removeAsset(appState, asset);
           },
-          child: AssetCard(
+          child: EnhancedAssetCard(
             asset: asset,
             onTap: () => _showAssetDetails(asset),
+            onAssetUpdated: (updatedAsset) {
+              // Now we can directly update the enhanced asset
+              appState.updateEnhancedAsset(updatedAsset);
+            },
+            // Strategy management callbacks
+            onAddStrategy: () => _showAddStrategyDialog(asset),
+            onStrategyTap: (strategy) => _navigateToStrategyEdit(strategy, asset),
+            onStrategyDelete: (strategyId) => _deleteStrategy(appState, asset, strategyId),
+            onAlertToggle: (strategyId, enabled) => _toggleStrategyAlert(appState, asset, strategyId, enabled),
+            // Trade management callbacks
+            onAddTrade: () => _showAddTradeDialog(asset),
+            onTradeEdit: (trade) => _navigateToTradeEdit(trade, asset),
+            onTradeDelete: (trade) => _deleteTrade(appState, asset, trade),
+            onTradeClose: (trade) => _closeTrade(appState, asset, trade),
           ),
         );
       },
@@ -280,7 +298,7 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
     );
   }
 
-  Future<bool> _showRemoveConfirmation(AssetItem asset) async {
+  Future<bool> _showRemoveConfirmation(EnhancedAssetItem asset) async {
     return await showDialog<bool>(
       context: context,
       builder: (context) {
@@ -302,7 +320,7 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
     ) ?? false;
   }
 
-  void _removeAsset(AppStateProvider appState, AssetItem asset) {
+  void _removeAsset(AppStateProvider appState, EnhancedAssetItem asset) {
     appState.removeFromWatchlist(asset.id);
     
     ScaffoldMessenger.of(context).showSnackBar(
@@ -316,8 +334,8 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
     );
   }
 
-  void _undoRemoveAsset(AppStateProvider appState, AssetItem asset) {
-    appState.addToWatchlist(asset);
+  void _undoRemoveAsset(AppStateProvider appState, EnhancedAssetItem asset) {
+    appState.addEnhancedToWatchlist(asset);
   }
 
   void _showAddAssetDialog(AppStateProvider appState) {
@@ -369,7 +387,7 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
     appState.removeFromWatchlist(asset.id);
   }
 
-  void _showAssetDetails(AssetItem asset) {
+  void _showAssetDetails(EnhancedAssetItem asset) {
     showDialog(
       context: context,
       builder: (context) {
@@ -407,6 +425,78 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
     // Placeholder for refreshing asset data
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Refreshing asset data...')),
+    );
+  }
+
+  // Strategy management methods
+  void _showAddStrategyDialog(EnhancedAssetItem asset) {
+    // TODO: Implement strategy creation dialog
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Add strategy for ${asset.name} - Coming soon!')),
+    );
+  }
+
+  void _navigateToStrategyEdit(strategy_base.TradingStrategyItem strategy, EnhancedAssetItem asset) {
+    // TODO: Navigate to strategy edit screen
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Edit strategy ${strategy.strategy.name} - Coming soon!')),
+    );
+  }
+
+  void _deleteStrategy(AppStateProvider appState, EnhancedAssetItem asset, String strategyId) {
+    // TODO: Implement strategy deletion
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Delete strategy from ${asset.name} - Coming soon!')),
+    );
+  }
+
+  void _toggleStrategyAlert(AppStateProvider appState, EnhancedAssetItem asset, String strategyId, bool enabled) {
+    // TODO: Implement alert toggle
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${enabled ? 'Enabled' : 'Disabled'} alerts for strategy in ${asset.name}'),
+      ),
+    );
+  }
+
+  // Trade management methods
+  void _showAddTradeDialog(EnhancedAssetItem asset) {
+    // TODO: Implement trade creation dialog
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Add trade for ${asset.name} - Coming soon!')),
+    );
+  }
+
+  void _navigateToTradeEdit(ActiveTradeItem trade, EnhancedAssetItem asset) async {
+    final result = await Navigator.of(context).push<ActiveTradeItem>(
+      MaterialPageRoute(
+        builder: (context) => TradeDetailScreen(
+          trade: trade,
+          asset: asset,
+        ),
+      ),
+    );
+    
+    if (result != null && mounted) {
+      // Trade was updated, refresh the asset data
+      // TODO: Update the asset with the modified trade
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Trade updated successfully')),
+      );
+    }
+  }
+
+  void _deleteTrade(AppStateProvider appState, EnhancedAssetItem asset, ActiveTradeItem trade) {
+    // TODO: Implement trade deletion
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Delete trade from ${asset.name} - Coming soon!')),
+    );
+  }
+
+  void _closeTrade(AppStateProvider appState, EnhancedAssetItem asset, ActiveTradeItem trade) {
+    // TODO: Implement trade closing
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Close trade from ${asset.name} - Coming soon!')),
     );
   }
 }

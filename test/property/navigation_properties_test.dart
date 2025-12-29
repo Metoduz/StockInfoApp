@@ -10,6 +10,7 @@ import 'package:stockinfoapp/src/screens/settings_screen.dart';
 import 'package:stockinfoapp/src/screens/trading_history_screen.dart';
 import 'package:stockinfoapp/src/screens/legal_info_screen.dart';
 import 'package:stockinfoapp/src/widgets/asset_card.dart';
+import '../test_helpers.dart';
 
 void main() {
   group('Navigation Properties', () {
@@ -20,12 +21,8 @@ void main() {
       
       // Test with multiple iterations to verify property holds across different scenarios
       for (int iteration = 0; iteration < 3; iteration++) {
-        // Build the NavigationShell widget
-        await tester.pumpWidget(
-          const MaterialApp(
-            home: NavigationShell(),
-          ),
-        );
+        // Build the NavigationShell widget with proper provider setup
+        await pumpWidgetWithProvider(tester, const NavigationShell());
 
         // Test each tab (0: Main, 1: News, 2: Alerts)
         for (int tabIndex = 0; tabIndex < 3; tabIndex++) {
@@ -55,12 +52,8 @@ void main() {
       
       // Test with multiple iterations to verify property holds across different scenarios
       for (int iteration = 0; iteration < 100; iteration++) {
-        // Build the NavigationShell widget
-        await tester.pumpWidget(
-          const MaterialApp(
-            home: NavigationShell(),
-          ),
-        );
+        // Build the NavigationShell widget with proper provider setup
+        await pumpWidgetWithProvider(tester, const NavigationShell());
 
         // Start on Main tab (index 0) - this should be the default
         expect(find.byType(AssetList), findsOneWidget);
@@ -147,16 +140,12 @@ void main() {
       
       // Test with multiple iterations to verify property holds across different scenarios
       for (int iteration = 0; iteration < 100; iteration++) {
-        // Build the NavigationShell widget with drawer
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              appBar: AppBar(title: const Text('Test')),
-              drawer: const DrawerMenu(),
-              body: const Center(child: Text('Main Content')),
-            ),
-          ),
-        );
+        // Build the NavigationShell widget with drawer and proper provider setup
+        await pumpWidgetWithProvider(tester, Scaffold(
+          appBar: AppBar(title: const Text('Test')),
+          drawer: const DrawerMenu(),
+          body: const Center(child: Text('Main Content')),
+        ));
 
         // Open the drawer
         await tester.tap(find.byIcon(Icons.menu));

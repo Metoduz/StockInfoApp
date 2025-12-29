@@ -70,6 +70,15 @@ class DrawerMenu extends StatelessWidget {
                 },
               ),
               
+              ListTile(
+                leading: const Icon(Icons.folder_special),
+                title: const Text('Strategy Templates'),
+                onTap: () {
+                  Navigator.pop(context); // Close drawer
+                  Navigator.pushNamed(context, '/templates');
+                },
+              ),
+              
               const Divider(),
               
               ListTile(

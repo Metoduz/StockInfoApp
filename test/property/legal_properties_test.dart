@@ -212,7 +212,7 @@ void main() {
             reason: 'Should handle empty version strings');
         
         // Test 3: Very long version strings
-        final longVersion = 'v' + '1.0.0' * 100; // Very long version string
+        final longVersion = 'v${'1.0.0' * 100}'; // Very long version string
         await storageService.saveLegalDocumentVersion('test_doc_long', longVersion);
         final retrievedLongVersion = await storageService.getLegalDocumentVersion('test_doc_long');
         expect(retrievedLongVersion, equals(longVersion),

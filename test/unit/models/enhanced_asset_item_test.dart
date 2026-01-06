@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stockinfoapp/src/models/asset_item.dart';
 import 'package:stockinfoapp/src/strategies/trading_strategy_base.dart';
-import 'package:stockinfoapp/src/strategies/trendline_strategy.dart';
 import 'package:stockinfoapp/src/models/active_trade.dart';
 
 void main() {

@@ -535,7 +535,7 @@ void main() {
         if (iteration % 20 == 0) { // Test complex scenarios less frequently
           // Test template update from modified strategy
           final modifiedStrategy = appliedStrategy.addCondition(
-            _generateRandomStrategy(random, 'additional_${iteration}'),
+            _generateRandomStrategy(random, 'additional_$iteration'),
             LogicalOperator.or,
           );
           

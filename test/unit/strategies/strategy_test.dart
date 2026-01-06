@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import '../../../lib/src/strategies/trading_strategy_base.dart';
-import '../../../lib/src/strategies/trendline_strategy.dart';
-import '../../../lib/src/strategies/buy_area_strategy.dart';
-import '../../../lib/src/strategies/elliot_waves_strategy.dart';
-import '../../../lib/src/strategies/composite_strategy.dart';
+import 'package:stockinfoapp/src/strategies/trading_strategy_base.dart';
+import 'package:stockinfoapp/src/strategies/trendline_strategy.dart';
+import 'package:stockinfoapp/src/strategies/buy_area_strategy.dart';
+import 'package:stockinfoapp/src/strategies/elliot_waves_strategy.dart';
+import 'package:stockinfoapp/src/strategies/composite_strategy.dart';
 
 void main() {
   group('StrategyType', () {

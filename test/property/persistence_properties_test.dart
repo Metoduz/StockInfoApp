@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stockinfoapp/src/services/storage_service.dart';
 import 'package:stockinfoapp/src/models/asset_item.dart';
 import 'package:stockinfoapp/src/models/user_profile.dart';

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import '../../../lib/src/widgets/trade_close_dialog.dart';
-import '../../../lib/src/models/active_trade.dart';
-import '../../../lib/src/strategies/trading_strategy_base.dart';
+import 'package:stockinfoapp/src/widgets/trade_close_dialog.dart';
+import 'package:stockinfoapp/src/models/active_trade.dart';
+import 'package:stockinfoapp/src/strategies/trading_strategy_base.dart';
 
 void main() {
   group('TradeCloseDialog', () {

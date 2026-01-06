@@ -5,6 +5,7 @@ import '../models/active_trade.dart';
 import '../strategies/trading_strategy_base.dart' as strategy_base;
 import '../widgets/enhanced_asset_card.dart';
 import '../widgets/asset_search_dialog.dart';
+import '../widgets/strategy_creation_dialog.dart';
 import '../screens/trade_detail_screen.dart';
 import '../providers/app_state_provider.dart';
 
@@ -429,9 +430,17 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
 
   // Strategy management methods
   void _showAddStrategyDialog(AssetItem asset) {
-    // TODO: Implement strategy creation dialog
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Add strategy for ${asset.name} - Coming soon!')),
+    StrategyCreationDialog.show(
+      context: context,
+      asset: asset,
+      onStrategyCreated: (strategyItem) {
+        // Update the asset with the new strategy
+        final updatedAsset = asset.addStrategy(strategyItem);
+        
+        // Update the asset in the app state provider (which handles persistence)
+        final appState = Provider.of<AppStateProvider>(context, listen: false);
+        appState.updateEnhancedAsset(updatedAsset);
+      },
     );
   }
 

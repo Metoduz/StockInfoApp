@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/asset_item.dart';
 import '../widgets/enhanced_asset_card.dart';
+import '../widgets/strategy_creation_dialog.dart';
 
 class AssetList extends StatefulWidget {
   const AssetList({super.key});
@@ -166,6 +167,7 @@ class _AssetListState extends State<AssetList> {
               _assets[index] = updatedAsset;
             });
           },
+          onAddStrategy: () => _showStrategyCreationDialog(asset, index),
         );
       },
     );
@@ -201,6 +203,25 @@ class _AssetListState extends State<AssetList> {
             ),
           ],
         );
+      },
+    );
+  }
+
+  /// Show strategy creation dialog for the specified asset
+  void _showStrategyCreationDialog(AssetItem asset, int assetIndex) {
+    StrategyCreationDialog.show(
+      context: context,
+      asset: asset,
+      onStrategyCreated: (strategyItem) {
+        // Add the new strategy to the asset's strategy list
+        final updatedAsset = asset.copyWith(
+          strategies: [...asset.strategies, strategyItem],
+        );
+        
+        // Update the asset in the list
+        setState(() {
+          _assets[assetIndex] = updatedAsset;
+        });
       },
     );
   }
